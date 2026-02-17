@@ -210,12 +210,13 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 <body>
   
 <script>
-  const password = "ego2026"; // CAMBIA QUI LA PASSWORD
+  const password = "ego2026";
 
-  let userInput = prompt("Inserisci la password per accedere:");
+  const userInput = prompt("Inserisci la password per accedere:");
 
   if (userInput !== password) {
-    document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px;'>Accesso negato</h1>";
+    document.write("<h1 style='text-align:center;margin-top:50px;font-family:sans-serif;'>Accesso negato</h1>");
+    document.stop();
   }
 </script>
 
