@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EGO Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0c0f;
+  --surface: #111417;
+  --surface2: #191c21;
+  --border: #252930;
+  --accent: #e8b84b;
+  --accent2: #4b9de8;
+  --text: #f0f2f5;
+  --text2: #8a919e;
+  --text3: #555d68;
+  --green: #3dd68c;
+  --red: #e84b4b;
+  --btn-blue: #1e3a5f;
+  --btn-orange: #4a2e0f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ===== HOME SCREEN ===== */
+#home-screen { display: flex; flex-direction: column; min-height: 100vh; }
+.home-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 1.2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.app-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; }
+.home-actions { display: flex; gap: 0.5rem; }
+.btn-sm {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+  padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
+  font-family: 'Barlow', sans-serif; transition: all 0.2s; white-space: nowrap;
+}
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+.btn-sm.primary:hover { opacity: 0.85; }
+.btn-sm.danger { border-color: #3a1515; color: var(--red); }
+.btn-sm.danger:hover { background: #1a0808; }
+
+/* TABS */
+.tabs {
+  display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0 1rem;
+}
+.tab {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3);
+  padding: 0.7rem 0.8rem; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* GIORNI LIST */
+.giorni-list { padding: 1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+.giorno-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 0.9rem 1rem; cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.giorno-card:hover { border-color: var(--accent); }
+.giorno-card.selected { border-color: var(--accent2); background: #0d1e33; }
+.giorno-date { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.giorno-meta { display: flex; gap: 1rem; margin-top: 0.2rem; }
+.giorno-stat { font-size: 0.72rem; color: var(--text3); }
+.giorno-stat span { color: var(--text2); font-weight: 600; }
+.giorno-actions { display: flex; gap: 0.4rem; align-items: center; }
+.btn-icon {
+  background: none; border: 1px solid var(--border); color: var(--text3);
+  width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+.btn-icon.del:hover { border-color: var(--red); color: var(--red); }
+
+/* ANALISI AGGREGATA */
+.analisi-section { padding: 1rem; }
+.analisi-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+.analisi-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text3); }
+.selection-info { font-size: 0.72rem; color: var(--accent2); }
+.btn-analisi {
+  display: block; width: 100%; background: var(--accent); color: #000;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 0.8rem;
+  border-radius: 10px; border: none; cursor: pointer; margin-top: 0.8rem;
+  transition: opacity 0.2s;
+}
+.btn-analisi:hover { opacity: 0.85; }
+.btn-analisi:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* QUICK SELECT */
+.quick-select { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.btn-quick {
+  background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+  padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.72rem; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 600; letter-spacing: 0.05em;
+  text-transform: uppercase; transition: all 0.2s;
+}
+.btn-quick:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center; padding: 3rem 2rem; color: var(--text3);
+}
+.empty-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+.empty-state h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; color: var(--text2); margin-bottom: 0.5rem; }
+
+/* ADD DAY ZONE */
+.add-day-zone {
+  margin: 1rem; border: 2px dashed var(--border); border-radius: 12px;
+  padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s;
+  background: var(--surface);
+}
+.add-day-zone:hover { border-color: var(--accent); background: #1a1408; }
+.add-day-zone h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
+.add-day-zone p { font-size: 0.8rem; color: var(--text3); }
+
+/* ===== LOADING ===== */
+#loading-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 1.5rem; }
+.spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== DASHBOARD SCREEN ===== */
+#dashboard-screen { display: none; }
+.dash-header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0.8rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.dash-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; }
+.dash-subtitle { font-size: 0.7rem; color: var(--text3); margin-top: 0.1rem; }
+
+/* SUMMARY CARDS */
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; padding: 1rem; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1rem; }
+.card.full { grid-column: 1 / -1; }
+.card-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); font-family: 'Barlow Condensed', sans-serif; font-weight: 600; margin-bottom: 0.3rem; }
+.card-value { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--text); letter-spacing: 0.02em; }
+.card-value.accent { color: var(--accent); }
+.card-value.green { color: var(--green); }
+.card-value.red { color: var(--red); }
+.card-value.blue { color: var(--accent2); }
+.progress-bar-wrap { background: var(--border); border-radius: 4px; height: 6px; margin-top: 0.5rem; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 4px; background: var(--green); transition: width 1s ease; }
+
+/* BUTTONS */
+.section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text3); padding: 0.5rem 1rem 0.3rem; }
+.btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.5rem 1rem; }
+.btn-stat {
+  padding: 0.65rem 0.5rem; border-radius: 10px; border: none;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  line-height: 1.2; text-align: center;
+}
+.btn-stat.blue { background: var(--btn-blue); color: var(--accent2); border: 1px solid #1e4a80; }
+.btn-stat.blue:hover { background: #2d5a9e; border-color: var(--accent2); }
+.btn-stat.orange { background: var(--btn-orange); color: var(--accent); border: 1px solid #6a3e1a; }
+.btn-stat.orange:hover { background: #9e5a1e; border-color: var(--accent); }
+.btn-stat.full { grid-column: 1 / -1; }
+
+/* MINI BARS */
+.mini-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+.mini-bar-label { font-size: 0.7rem; color: var(--text2); min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: 'Barlow Condensed', sans-serif; }
+.mini-bar-track { flex: 1; background: var(--border); border-radius: 3px; height: 18px; overflow: hidden; }
+.mini-bar-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 0.3rem; font-size: 0.65rem; font-weight: 600; color: #000; min-width: 4px; transition: width 1s ease; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; align-items: flex-end; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-height: 88vh; overflow-y: auto; padding: 1.2rem 1rem 2rem; animation: slideUp 0.3s ease; position: relative; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 1rem; }
+.modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem; text-align: center; }
+.modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.chart-container { position: relative; width: 100%; min-height: 280px; margin-bottom: 1rem; }
+.stat-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 0.5rem; }
+.stat-table th { background: var(--surface2); color: var(--text3); font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem; text-align: left; position: sticky; top: 0; }
+.stat-table td { padding: 0.5rem; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 0.78rem; }
+.stat-table td:first-child { color: var(--text); }
+.stat-table td.num { text-align: right; font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; color: var(--text); }
+.badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+.badge.gold { background: #3a2e10; color: var(--accent); }
+.badge.blue { background: #0e2a44; color: var(--accent2); }
+.no-data { text-align: center; color: var(--text3); padding: 2rem; font-size: 0.85rem; }
+
+/* TIPO BADGE */
+.tipo-badge { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 4px; }
+.tipo-badge.giorno { background: #1e3a5f; color: var(--accent2); }
+.tipo-badge.settimana { background: #2a1e5f; color: #a04be8; }
+.tipo-badge.mese { background: #1e3a2a; color: var(--green); }
+
+@media(min-width: 600px) {
+  .summary-grid { grid-template-columns: repeat(3, 1fr); padding: 1.2rem; }
+  .btn-grid { grid-template-columns: repeat(3, 1fr); }
+  .modal { max-width: 600px; margin: auto; border-radius: 20px; }
+  .modal-overlay { align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HOME SCREEN ===== -->
+<div id="home-screen">
+  <div class="home-header">
+    <div>
+      <div class="app-logo">EGO</div>
+    </div>
+    <div class="home-actions">
+      <button class="btn-sm" onclick="exportData()">📤 Esporta</button>
+      <button class="btn-sm" onclick="document.getElementById('import-input').click()">📥 Importa</button>
+      <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('giorni')" id="tab-giorni">Giorni</div>
+    <div class="tab" onclick="switchTab('analisi')" id="tab-analisi">Analisi</div>
+  </div>
+
+  <!-- TAB GIORNI -->
+  <div id="panel-giorni">
+    <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
+      <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
+      <h3>Aggiungi chiusura</h3>
+      <p>Tocca per caricare un file Excel giornaliero</p>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
+    <div class="giorni-list" id="giorni-list"></div>
+  </div>
+
+  <!-- TAB ANALISI -->
+  <div id="panel-analisi" style="display:none">
+    <div class="analisi-section">
+      <div class="analisi-header">
+        <div class="analisi-title">Seleziona giorni</div>
+        <div class="selection-info" id="sel-info">0 giorni selezionati</div>
+      </div>
+      <div class="quick-select">
+        <button class="btn-quick" onclick="selectUltimi(7)">Ultimi 7gg</button>
+        <button class="btn-quick" onclick="selectUltimi(30)">Ultimi 30gg</button>
+        <button class="btn-quick" onclick="selectSettimana()">Questa settimana</button>
+        <button class="btn-quick" onclick="selectMese()">Questo mese</button>
+        <button class="btn-quick" onclick="deselezionaTutti()">Deseleziona tutto</button>
+      </div>
+      <div class="giorni-list" id="giorni-list-analisi"></div>
+      <button class="btn-analisi" id="btn-analisi" onclick="apriAnalisi()" disabled>Apri analisi aggregata</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOADING ===== -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div style="color:var(--text2);font-size:0.9rem;" id="loading-msg">Elaborazione dati...</div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashboard-screen">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title" id="dash-title">Dashboard</div>
+      <div class="dash-subtitle" id="dash-subtitle"></div>
+    </div>
+    <button class="btn-sm" onclick="tornaHome()">← Home</button>
+  </div>
+
+  <div class="summary-grid">
+    <div class="card full">
+      <div class="card-label">Incasso imponibile</div>
+      <div class="card-value accent" id="s-incasso">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Margine chiusura</div>
+      <div class="card-value green" id="s-margine">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Break Even</div>
+      <div class="card-value blue" id="s-bep">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Costi fissi/giorno</div>
+      <div class="card-value" id="s-costi-fissi">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Marg. effettivo</div>
+      <div class="card-value" id="s-marg-eff">—</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s-progress" style="width:0%"></div></div>
+    </div>
+    <div class="card full">
+      <div class="card-label">Top 5 categorie per quantità</div>
+      <div id="top5-bars" style="margin-top:0.5rem"></div>
+    </div>
+  </div>
+
+  <div class="section-title">Analisi per categoria</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue full" onclick="openModal('cat-vendute')">🏆 Cat. più vendute</button>
+    <button class="btn-stat blue full" onclick="openModal('cat-incasso')">💶 Cat. più incasso</button>
+    <button class="btn-stat orange full" onclick="openModal('cat-margine')">📈 Cat. più margine</button>
+  </div>
+  <div class="section-title">Drink</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('drink-venduti')">Drink più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('drink-margine')">Drink più margine</button>
+  </div>
+  <div class="section-title">Pizze</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('pizze-vendute')">Pizze più vendute</button>
+    <button class="btn-stat orange" onclick="openModal('pizze-margine')">Pizze più margine</button>
+  </div>
+  <div class="section-title">Primi</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('primi-venduti')">Primi più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('primi-margine')">Primi più margine</button>
+  </div>
+  <div class="section-title">Secondi</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('secondi-venduti')">Secondi più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('secondi-margine')">Secondi più margine</button>
+  </div>
+  <div class="section-title">Hamburger</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('burger-venduti')">Burger più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('burger-margine')">Burger più margine</button>
+  </div>
+  <div class="section-title">Antipasti</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('anti-venduti')">Antipasti più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('anti-margine')">Antipasti più margine</button>
+  </div>
+  <div class="section-title">Dolci</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('dolci-venduti')">Dolci più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('dolci-margine')">Dolci più margine</button>
+  </div>
+  <div class="section-title">Caffetteria</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('caffe-venduti')">Caffetteria più venduta</button>
+    <button class="btn-stat orange" onclick="openModal('caffe-margine')">Caffetteria più margine</button>
+  </div>
+  <div class="section-title">Vini Bianchi</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('vb-venduti')">Vini bianchi più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('vb-margine')">Vini bianchi più margine</button>
+  </div>
+  <div class="section-title">Vini Rossi e Rosati</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('vr-venduti')">Vini rossi/rosati venduti</button>
+    <button class="btn-stat orange" onclick="openModal('vr-margine')">Vini rossi/rosati margine</button>
+  </div>
+  <div class="section-title">Spumanti e Prosecco</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('spu-venduti')">Spumanti più venduti</button>
+    <button class="btn-stat orange" onclick="openModal('spu-margine')">Spumanti più margine</button>
+  </div>
+  <div class="section-title">Birre</div>
+  <div class="btn-grid">
+    <button class="btn-stat blue" onclick="openModal('birre-vendute')">Birre più vendute</button>
+    <button class="btn-stat orange" onclick="openModal('birre-margine')">Birre più margine</button>
+  </div>
+  <div style="height:2rem"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ===== COSTANTI =====
+const CATEGORIE_ESCLUSE = ['SERVIZIO', '--CLIENTE--'];
+const STORAGE_KEY = 'ego_chiusure_v1';
+
+// ===== STATO =====
+let CHIUSURE = [];       // array di oggetti giornata salvati
+let CURRENT_DATA = null; // dati attivi nella dashboard
+let activeChart = null;
+let selectedIds = new Set();
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  loadFromStorage();
+  renderGiorniList();
+  document.getElementById('file-input').addEventListener('change', e => {
+    if (e.target.files[0]) processFile(e.target.files[0]);
+    e.target.value = '';
+  });
+  const dz = document.querySelector('.add-day-zone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
+  dz.addEventListener('dragleave', () => dz.style.borderColor = '');
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.style.borderColor = '';
+    if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+  });
+});
+
+// ===== STORAGE =====
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) CHIUSURE = JSON.parse(raw);
+  } catch(e) { CHIUSURE = []; }
+}
+
+function saveToStorage() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(CHIUSURE)); } catch(e) {}
+}
+
+// ===== EXPORT / IMPORT =====
+function exportData() {
+  if (!CHIUSURE.length) { alert('Nessun dato da esportare'); return; }
+  const blob = new Blob([JSON.stringify(CHIUSURE, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ego_chiusure_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error('Formato non valido');
+      // Merge: aggiungi solo quelli non già presenti (per id)
+      const existingIds = new Set(CHIUSURE.map(c => c.id));
+      let added = 0;
+      data.forEach(d => {
+        if (!existingIds.has(d.id)) { CHIUSURE.push(d); added++; }
+      });
+      CHIUSURE.sort((a,b) => b.data.localeCompare(a.data));
+      saveToStorage();
+      renderGiorniList();
+      alert(`Importati ${added} giorni. ${data.length - added} già presenti.`);
+    } catch(err) {
+      alert('Errore nel file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ===== TABS =====
+function switchTab(tab) {
+  document.getElementById('panel-giorni').style.display = tab === 'giorni' ? 'block' : 'none';
+  document.getElementById('panel-analisi').style.display = tab === 'analisi' ? 'block' : 'none';
+  document.getElementById('tab-giorni').className = 'tab' + (tab === 'giorni' ? ' active' : '');
+  document.getElementById('tab-analisi').className = 'tab' + (tab === 'analisi' ? ' active' : '');
+  if (tab === 'analisi') renderGiorniListAnalisi();
+}
+
+// ===== RENDER LISTE =====
+function renderGiorniList() {
+  const container = document.getElementById('giorni-list');
+  if (!CHIUSURE.length) {
+    container.innerHTML = `<div class="empty-state">
+      <span class="empty-icon">📋</span>
+      <h3>Nessuna chiusura salvata</h3>
+      <p>Carica il tuo primo file Excel qui sopra</p>
+    </div>`;
+    return;
+  }
+  container.innerHTML = CHIUSURE.map(c => `
+    <div class="giorno-card" onclick="apriGiorno('${c.id}')">
+      <div>
+        <div class="giorno-date">${formatDate(c.data)}</div>
+        <div class="giorno-meta">
+          <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
+          <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
+        </div>
+      </div>
+      <div class="giorno-actions" onclick="event.stopPropagation()">
+        <button class="btn-icon del" onclick="eliminaGiorno('${c.id}')" title="Elimina">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGiorniListAnalisi() {
+  const container = document.getElementById('giorni-list-analisi');
+  if (!CHIUSURE.length) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-icon">📋</span><h3>Nessuna chiusura disponibile</h3></div>`;
+    return;
+  }
+  container.innerHTML = CHIUSURE.map(c => `
+    <div class="giorno-card ${selectedIds.has(c.id) ? 'selected' : ''}" onclick="toggleSelezione('${c.id}')">
+      <div>
+        <div class="giorno-date">${formatDate(c.data)}</div>
+        <div class="giorno-meta">
+          <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
+          <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
+        </div>
+      </div>
+      <div style="font-size:1.2rem">${selectedIds.has(c.id) ? '✓' : ''}</div>
+    </div>
+  `).join('');
+  aggiornaSelezioneInfo();
+}
+
+// ===== SELEZIONE ANALISI =====
+function toggleSelezione(id) {
+  if (selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+  renderGiorniListAnalisi();
+}
+
+function selectUltimi(n) {
+  selectedIds = new Set(CHIUSURE.slice(0, n).map(c => c.id));
+  renderGiorniListAnalisi();
+}
+
+function selectSettimana() {
+  const now = new Date();
+  const dow = now.getDay();
+  const lunedi = new Date(now);
+  lunedi.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+  lunedi.setHours(0,0,0,0);
+  selectedIds = new Set(CHIUSURE.filter(c => new Date(c.data) >= lunedi).map(c => c.id));
+  renderGiorniListAnalisi();
+}
+
+function selectMese() {
+  const now = new Date();
+  const inizioMese = new Date(now.getFullYear(), now.getMonth(), 1);
+  selectedIds = new Set(CHIUSURE.filter(c => new Date(c.data) >= inizioMese).map(c => c.id));
+  renderGiorniListAnalisi();
+}
+
+function deselezionaTutti() {
+  selectedIds = new Set();
+  renderGiorniListAnalisi();
+}
+
+function aggiornaSelezioneInfo() {
+  const n = selectedIds.size;
+  document.getElementById('sel-info').textContent = n + (n === 1 ? ' giorno selezionato' : ' giorni selezionati');
+  document.getElementById('btn-analisi').disabled = n === 0;
+}
+
+function apriAnalisi() {
+  if (!selectedIds.size) return;
+  const giorni = CHIUSURE.filter(c => selectedIds.has(c.id));
+  const n = giorni.length;
+  // Aggrega i dati
+  const merged = {
+    chiusura: giorni.flatMap(g => g.chiusura),
+    foodDrinkCost: giorni[0].foodDrinkCost,
+    iva: giorni[0].iva,
+    costiGiorn: giorni[0].costiGiorn * n, // costi fissi per il periodo
+  };
+  const tipo = n === 1 ? 'giorno' : n <= 7 ? 'settimana' : 'mese';
+  const label = n === 1 ? formatDate(giorni[0].data) :
+    `${formatDate(giorni[n-1].data)} → ${formatDate(giorni[0].data)} (${n} giorni)`;
+  apriDashboard(merged, label, tipo);
+}
+
+// ===== GIORNO SINGOLO =====
+function apriGiorno(id) {
+  const c = CHIUSURE.find(x => x.id === id);
+  if (!c) return;
+  apriDashboard(c, formatDate(c.data), 'giorno');
+}
+
+function eliminaGiorno(id) {
+  if (!confirm('Eliminare questa chiusura?')) return;
+  CHIUSURE = CHIUSURE.filter(c => c.id !== id);
+  saveToStorage();
+  renderGiorniList();
+}
+
+// ===== APRI DASHBOARD =====
+function apriDashboard(data, label, tipo) {
+  CURRENT_DATA = data;
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('dashboard-screen').style.display = 'block';
+  document.getElementById('dash-title').textContent = label;
+
+  const tipoLabels = { giorno: 'Chiusura giornaliera', settimana: 'Analisi settimanale', mese: 'Analisi mensile' };
+  document.getElementById('dash-subtitle').textContent = tipoLabels[tipo] || '';
+
+  buildUI();
+  window.scrollTo(0, 0);
+}
+
+function tornaHome() {
+  document.getElementById('dashboard-screen').style.display = 'none';
+  document.getElementById('home-screen').style.display = 'flex';
+  CURRENT_DATA = null;
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+}
+
+// ===== PROCESS FILE =====
+function processFile(file) {
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const dati = parseWorkbook(wb, file.name);
+      // Controlla se esiste già
+      const esistente = CHIUSURE.find(c => c.id === dati.id);
+      if (esistente) {
+        if (!confirm(`La chiusura del ${formatDate(dati.data)} esiste già. Sovrascrivere?`)) {
+          document.getElementById('loading-screen').style.display = 'none';
+          document.getElementById('home-screen').style.display = 'flex';
+          return;
+        }
+        CHIUSURE = CHIUSURE.filter(c => c.id !== dati.id);
+      }
+      CHIUSURE.unshift(dati);
+      CHIUSURE.sort((a,b) => b.data.localeCompare(a.data));
+      saveToStorage();
+      renderGiorniList();
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('home-screen').style.display = 'flex';
+      // Apri subito la dashboard del giorno appena caricato
+      apriGiorno(dati.id);
+    } catch(err) {
+      alert('Errore nel leggere il file: ' + err.message);
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('home-screen').style.display = 'flex';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ===== PARSING =====
+function parseWorkbook(wb, filename) {
+  const result = {
+    id: '',
+    data: '',
+    filename: filename || '',
+    chiusura: [],
+    foodDrinkCost: {},
+    iva: {},
+    costiGiorn: 0,
+    totImponibile: 0,
+    totMargine: 0,
+  };
+
+  // CHIUSURA
+  if (wb.Sheets['CHIUSURA']) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['CHIUSURA'], { header: 1 });
+    const headers = rows[0];
+    const idx = {
+      prodotto: headers.indexOf('PRODOTTO'),
+      cod: headers.indexOf('COD. PROD.'),
+      cat: headers.indexOf('CATEGORIA'),
+      qty: headers.indexOf("QUANTITA'"),
+      totale: headers.indexOf('TOTALE'),
+    };
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r[idx.prodotto]) continue;
+      result.chiusura.push({
+        prodotto: String(r[idx.prodotto] || '').trim(),
+        cod: r[idx.cod],
+        cat: String(r[idx.cat] || '').trim(),
+        qty: parseFloat(r[idx.qty]) || 0,
+        totale: parseFloat(r[idx.totale]) || 0,
+      });
+    }
+  }
+
+  // FOOD-DRINK COST
+  if (wb.Sheets['FOOD-DRINK COST']) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['FOOD-DRINK COST'], { header: 1 });
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      const codRaw = r[2];
+      const costoUnit = parseFloat(r[4]) || 0;
+      if (codRaw != null) {
+        const codKey = String(Math.round(parseFloat(codRaw)));
+        if (codKey !== 'NaN') result.foodDrinkCost[codKey] = { costoUnit };
+      }
+    }
+  }
+
+  // REGOLE (IVA) — ricerca dinamica colonne
+  if (wb.Sheets['REGOLE']) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['REGOLE'], { header: 1 });
+    let ivaColIdx = -1, codColIdx = -1, dataStart = -1;
+    for (let i = 0; i < Math.min(rows.length, 10); i++) {
+      for (let j = 0; j < rows[i].length; j++) {
+        if (rows[i][j] && String(rows[i][j]).trim().toUpperCase() === 'IVA') {
+          ivaColIdx = j; dataStart = i + 1; break;
+        }
+      }
+      if (dataStart >= 0) break;
+    }
+    if (dataStart > 0) {
+      const headerRow = rows[dataStart - 1];
+      for (let j = 0; j < headerRow.length; j++) {
+        if (headerRow[j] && String(headerRow[j]).includes('COD')) { codColIdx = j; break; }
+      }
+    }
+    if (ivaColIdx >= 0 && codColIdx >= 0) {
+      for (let i = dataStart; i < rows.length; i++) {
+        const r = rows[i];
+        const codRaw = r[codColIdx];
+        const ivaRaw = r[ivaColIdx];
+        if (codRaw != null && ivaRaw != null) {
+          const codKey = String(Math.round(parseFloat(codRaw)));
+          const iva = parseFloat(ivaRaw);
+          if (codKey !== 'NaN' && !isNaN(iva)) result.iva[codKey] = iva;
+        }
+      }
+    }
+  }
+
+  // COSTI
+  if (wb.Sheets['COSTI']) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['COSTI'], { header: 1 });
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      if (r[0] && String(r[0]).toLowerCase().includes('costi al gg')) {
+        result.costiGiorn = parseFloat(r[2]) || 0;
+        break;
+      }
+    }
+  }
+
+  // Calcola valori per ogni riga
+  result.chiusura.forEach(item => {
+    const codKey = String(Math.round(parseFloat(item.cod)));
+    const ivaRate = result.iva[codKey] || 1.1;
+    item.imponibile = item.totale / ivaRate;
+    const fdEntry = result.foodDrinkCost[codKey];
+    item.costoUnit = fdEntry ? fdEntry.costoUnit : 0;
+    item.costoTot = item.costoUnit * item.qty;
+    item.margineEuro = item.costoTot === 0 ? 0 : item.imponibile - item.costoTot;
+    item.marginePerc = item.imponibile > 0 ? (item.margineEuro / item.imponibile) * 100 : 0;
+  });
+
+  // Totali per la card nella home
+  result.totImponibile = result.chiusura.reduce((s, r) => s + r.imponibile, 0);
+  result.totMargine = result.chiusura.reduce((s, r) => s + r.margineEuro, 0);
+
+  // ID e data: usa la data dal nome file o quella di oggi
+  const oggi = new Date().toISOString().slice(0, 10);
+  result.data = oggi;
+  // Prova a estrarre data dal nome file (es: "CHIUSURA 15-01-2025.xlsx")
+  const dateMatch = (result.filename || '').match(/(\d{1,2})[-_\/](\d{1,2})[-_\/](\d{2,4})/);
+  if (dateMatch) {
+    const [, d, m, y] = dateMatch;
+    const year = y.length === 2 ? '20' + y : y;
+    result.data = `${year}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+  result.id = result.data + '_' + result.filename.replace(/[^a-z0-9]/gi, '');
+
+  return result;
+}
+
+// ===== BUILD UI =====
+function buildUI() {
+  const d = CURRENT_DATA;
+  const totImponibile = d.chiusura.reduce((s, r) => s + r.imponibile, 0);
+  const totMargine = d.chiusura.reduce((s, r) => s + r.margineEuro, 0);
+  const costiGiorno = d.costiGiorn || 0;
+  const percMargine = totImponibile > 0 ? totMargine / totImponibile : 0;
+  const bep = percMargine > 0 ? totImponibile + (costiGiorno - totMargine) / percMargine : 0;
+  const margEff = totMargine - costiGiorno;
+
+  document.getElementById('s-incasso').textContent = fmt(totImponibile);
+  document.getElementById('s-margine').textContent = fmt(totMargine);
+  document.getElementById('s-bep').textContent = costiGiorno > 0 ? fmt(bep) : 'N/D';
+  document.getElementById('s-costi-fissi').textContent = costiGiorno > 0 ? fmt(costiGiorno) : 'N/D';
+
+  const el = document.getElementById('s-marg-eff');
+  el.textContent = fmt(margEff);
+  el.className = 'card-value ' + (margEff >= 0 ? 'green' : 'red');
+
+  if (bep > 0) {
+    const perc = Math.min(100, (totImponibile / bep) * 100);
+    document.getElementById('s-progress').style.width = perc + '%';
+    document.getElementById('s-progress').style.background = perc >= 100 ? 'var(--green)' : 'var(--accent)';
+  }
+  buildTop5Bars();
+}
+
+function buildTop5Bars() {
+  const bycat = {};
+  CURRENT_DATA.chiusura.filter(r => !CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r => {
+    if (!bycat[r.cat]) bycat[r.cat] = 0;
+    bycat[r.cat] += r.qty;
+  });
+  const sorted = Object.entries(bycat).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const max = sorted[0]?.[1] || 1;
+  const colors = ['#e8b84b','#4b9de8','#3dd68c','#e84b7a','#a04be8'];
+  document.getElementById('top5-bars').innerHTML = sorted.map(([cat, qty], i) => {
+    const pct = (qty/max*100).toFixed(0);
+    const label = cat.replace(/--/g,'').trim();
+    return `<div class="mini-bar-row">
+      <div class="mini-bar-label">${label}</div>
+      <div class="mini-bar-track">
+        <div class="mini-bar-fill" style="width:${pct}%;background:${colors[i]};">${qty}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== MODAL =====
+function openModal(type) {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+  const config = getModalConfig(type);
+  document.getElementById('modal-title').textContent = config.title;
+  document.getElementById('modal-body').innerHTML = config.html;
+  if (config.chartData) renderChart(config.chartData, config.chartType || 'bar', config.colorScheme);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (activeChart) { activeChart.destroy(); activeChart = null; }
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// ===== DATA HELPERS =====
+function groupBy(field, sumField) {
+  const acc = {};
+  CURRENT_DATA.chiusura.filter(r => !CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r => {
+    const key = r[field] || 'N/D';
+    if (!acc[key]) acc[key] = 0;
+    acc[key] += r[sumField] || 0;
+  });
+  return Object.entries(acc).sort((a,b) => b[1]-a[1]);
+}
+
+function groupByMargine(field) {
+  const acc = {};
+  CURRENT_DATA.chiusura.filter(r => !CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r => {
+    const key = r[field] || 'N/D';
+    if (!acc[key]) acc[key] = { margine: 0, incasso: 0 };
+    acc[key].margine += r.margineEuro || 0;
+    acc[key].incasso += r.imponibile || 0;
+  });
+  return Object.entries(acc).map(([k,v]) => [k, v.margine, v.incasso > 0 ? (v.margine/v.incasso*100) : 0]).sort((a,b) => b[1]-a[1]);
+}
+
+function filterGroupBy(cats, groupField, sumField, limit) {
+  const acc = {};
+  CURRENT_DATA.chiusura.filter(r => cats.includes(r.cat)).forEach(r => {
+    const key = r[groupField] || 'N/D';
+    if (!acc[key]) acc[key] = 0;
+    acc[key] += r[sumField] || 0;
+  });
+  return Object.entries(acc).sort((a,b) => b[1]-a[1]).slice(0, limit);
+}
+
+function filterGroupByMargine(cats, groupField, limit) {
+  const acc = {};
+  CURRENT_DATA.chiusura.filter(r => cats.includes(r.cat)).forEach(r => {
+    const key = r[groupField] || 'N/D';
+    if (!acc[key]) acc[key] = { margine: 0, incasso: 0 };
+    acc[key].margine += r.margineEuro || 0;
+    acc[key].incasso += r.imponibile || 0;
+  });
+  return Object.entries(acc).map(([k,v]) => [k, v.margine, v.incasso > 0 ? (v.margine/v.incasso*100) : 0]).sort((a,b) => b[1]-a[1]).slice(0, limit);
+}
+
+// ===== MODAL CONFIGS =====
+function getModalConfig(type) {
+  const N = 10;
+  const configs = {
+    'cat-vendute': () => buildBarConfig('🏆 Categorie per Quantità', groupBy('cat','qty'), 'qty', 'pezzi', 'blue'),
+    'cat-incasso': () => buildBarConfig('💶 Categorie per Incasso', groupBy('cat','totale'), 'totale', '€', 'gold'),
+    'cat-margine': () => buildMarginConfig('📈 Categorie per Margine', groupByMargine('cat')),
+    'drink-venduti': () => buildBarConfig('🍹 Drink più Venduti', filterGroupBy(['--APERITIVI--','--COCKTAIL--','--GIN--','--EGO DRINKS--','--GRAPPE--','--RUM--','--TEQUILA--','--WHISKEY--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'drink-margine': () => buildMarginConfig('💰 Drink per Margine', filterGroupByMargine(['--APERITIVI--','--COCKTAIL--','--GIN--','--EGO DRINKS--','--GRAPPE--','--RUM--','--TEQUILA--','--WHISKEY--'], 'prodotto', N)),
+    'pizze-vendute': () => buildBarConfig('🍕 Pizze più Vendute', filterGroupBy(['--PIZZE CLASSICHE--','--PIZZE CREATIVE--','--PIZZE DOLCI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'pizze-margine': () => buildMarginConfig('🍕 Pizze per Margine', filterGroupByMargine(['--PIZZE CLASSICHE--','--PIZZE CREATIVE--','--PIZZE DOLCI--'], 'prodotto', N)),
+    'primi-venduti': () => buildBarConfig('🍝 Primi più Venduti', filterGroupBy(['--PRIMI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'primi-margine': () => buildMarginConfig('🍝 Primi per Margine', filterGroupByMargine(['--PRIMI--'], 'prodotto', N)),
+    'secondi-venduti': () => buildBarConfig('🥩 Secondi più Venduti', filterGroupBy(['--SECONDI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'secondi-margine': () => buildMarginConfig('🥩 Secondi per Margine', filterGroupByMargine(['--SECONDI--'], 'prodotto', N)),
+    'burger-venduti': () => buildBarConfig('🍔 Burger più Venduti', filterGroupBy(['--BURGER MENU--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'burger-margine': () => buildMarginConfig('🍔 Burger per Margine', filterGroupByMargine(['--BURGER MENU--'], 'prodotto', N)),
+    'anti-venduti': () => buildBarConfig('🫒 Antipasti più Venduti', filterGroupBy(['--ANTIPASTI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'anti-margine': () => buildMarginConfig('🫒 Antipasti per Margine', filterGroupByMargine(['--ANTIPASTI--'], 'prodotto', N)),
+    'dolci-venduti': () => buildBarConfig('🍰 Dolci più Venduti', filterGroupBy(['--DOLCI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'dolci-margine': () => buildMarginConfig('🍰 Dolci per Margine', filterGroupByMargine(['--DOLCI--'], 'prodotto', N)),
+    'caffe-venduti': () => buildBarConfig('☕ Caffetteria più Venduta', filterGroupBy(['--CAFFETTERIA--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'caffe-margine': () => buildMarginConfig('☕ Caffetteria per Margine', filterGroupByMargine(['--CAFFETTERIA--'], 'prodotto', N)),
+    'vb-venduti': () => buildBarConfig('🥂 Vini Bianchi più Venduti', filterGroupBy(['--VINI BIANCHI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'vb-margine': () => buildMarginConfig('🥂 Vini Bianchi per Margine', filterGroupByMargine(['--VINI BIANCHI--'], 'prodotto', N)),
+    'vr-venduti': () => buildBarConfig('🍷 Vini Rossi/Rosati più Venduti', filterGroupBy(['--VINI ROSSI E ROSATI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'vr-margine': () => buildMarginConfig('🍷 Vini Rossi/Rosati per Margine', filterGroupByMargine(['--VINI ROSSI E ROSATI--'], 'prodotto', N)),
+    'spu-venduti': () => buildBarConfig('🍾 Spumanti più Venduti', filterGroupBy(['--SPUMANTI E PROSECCHI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'spu-margine': () => buildMarginConfig('🍾 Spumanti per Margine', filterGroupByMargine(['--SPUMANTI E PROSECCHI--'], 'prodotto', N)),
+    'birre-vendute': () => buildBarConfig('🍺 Birre più Vendute', filterGroupBy(['--BIRRE--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
+    'birre-margine': () => buildMarginConfig('🍺 Birre per Margine', filterGroupByMargine(['--BIRRE--'], 'prodotto', N)),
+  };
+  const fn = configs[type];
+  if (!fn) return { title: 'N/D', html: '<div class="no-data">Dati non disponibili</div>' };
+  return fn();
+}
+
+// ===== CHART BUILDERS =====
+function buildBarConfig(title, data, valField, unit, colorScheme) {
+  if (!data.length) return { title, html: '<div class="no-data">Nessun dato disponibile</div>' };
+  const labels = data.map(([k]) => k.replace(/--/g,'').trim());
+  const values = data.map(([,v]) => Math.round(v * 100) / 100);
+  const tableRows = data.map(([k,v], i) =>
+    `<tr><td><span class="badge ${i<3?'gold':'blue'}">${i+1}</span> ${k.replace(/--/g,'').trim()}</td>
+    <td class="num">${valField === 'totale' ? fmt(v) : v.toFixed(0) + ' ' + unit}</td></tr>`
+  ).join('');
+  return {
+    title, chartData: { labels, values }, chartType: 'bar', colorScheme,
+    html: `<div class="chart-container"><canvas id="main-chart"></canvas></div>
+    <table class="stat-table"><thead><tr><th>Prodotto / Categoria</th><th style="text-align:right">${unit==='€'?'Incasso':'Quantità'}</th></tr></thead><tbody>${tableRows}</tbody></table>`
+  };
+}
+
+function buildMarginConfig(title, data) {
+  if (!data.length) return { title, html: '<div class="no-data">Nessun dato (costi mancanti)</div>' };
+  const labels = data.map(([k]) => k.replace(/--/g,'').trim());
+  const values = data.map(([,m]) => Math.round(m * 100) / 100);
+  const tableRows = data.map(([k,m,p], i) => {
+    const sign = m >= 0 ? '+' : '';
+    const col = m >= 0 ? 'color:var(--green)' : 'color:var(--red)';
+    return `<tr><td><span class="badge ${i<3?'gold':'blue'}">${i+1}</span> ${k.replace(/--/g,'').trim()}</td>
+    <td class="num" style="${col}">${sign}${fmt(m)}</td>
+    <td class="num" style="${col}">${sign}${p.toFixed(1)}%</td></tr>`;
+  }).join('');
+  return {
+    title, chartData: { labels, values }, chartType: 'margine', colorScheme: 'mixed',
+    html: `<div class="chart-container"><canvas id="main-chart"></canvas></div>
+    <table class="stat-table"><thead><tr><th>Prodotto</th><th style="text-align:right">Margine €</th><th style="text-align:right">%</th></tr></thead><tbody>${tableRows}</tbody></table>`
+  };
+}
+
+// ===== RENDER CHART =====
+function renderChart(data, type, colorScheme) {
+  const canvas = document.getElementById('main-chart');
+  if (!canvas) return;
+  const colors = {
+    blue: { bg: 'rgba(75,157,232,0.7)', border: '#4b9de8' },
+    gold: { bg: 'rgba(232,184,75,0.7)', border: '#e8b84b' },
+  };
+  const opts = {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1a1d22', titleColor: '#e8b84b', bodyColor: '#f0f2f5',
+        borderColor: '#252930', borderWidth: 1,
+        callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) }
+      }
+    },
+    scales: {
+      x: { grid: { color: '#1e2227' }, ticks: { color: '#8a919e', font: { family: 'Barlow Condensed', size: 11 }, callback: v => Math.abs(v)>=1000?(v/1000).toFixed(1)+'k':v }, border: { color: '#252930' } },
+      y: { grid: { display: false }, ticks: { color: '#c0c8d4', font: { family: 'Barlow Condensed', size: 11 }, maxTicksLimit: 12 }, border: { color: '#252930' } }
+    }
+  };
+  if (type === 'margine') {
+    activeChart = new Chart(canvas, { type: 'bar', data: { labels: data.labels, datasets: [{ label: 'Margine €', data: data.values, backgroundColor: data.values.map(v => v>=0?'rgba(61,214,140,0.7)':'rgba(232,75,75,0.7)'), borderColor: data.values.map(v => v>=0?'#3dd68c':'#e84b4b'), borderWidth: 1, borderRadius: 6 }] }, options: opts });
+  } else {
+    const c = colors[colorScheme] || colors.blue;
+    activeChart = new Chart(canvas, { type: 'bar', data: { labels: data.labels, datasets: [{ label: 'Valore', data: data.values, backgroundColor: c.bg, borderColor: c.border, borderWidth: 1, borderRadius: 6 }] }, options: opts });
+  }
+}
+
+// ===== UTILS =====
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n);
+}
+
+function formatDate(d) {
+  if (!d) return 'Data sconosciuta';
+  try {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  } catch { return d; }
+}
+</script>
+</body>
+</html>
