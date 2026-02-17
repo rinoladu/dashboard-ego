@@ -208,6 +208,15 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 </style>
 </head>
 <body>
+  <script>
+  const password = "ego2025"; // CAMBIA QUI LA PASSWORD
+
+  let userInput = prompt("Inserisci la password per accedere:");
+
+  if (userInput !== password) {
+    document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px;'>Accesso negato</h1>";
+  }
+</script>
 
 <!-- ===== HOME SCREEN ===== -->
 <div id="home-screen">
