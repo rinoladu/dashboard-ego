@@ -751,8 +751,17 @@ function tornaHome() {
 
 // ===== PROCESS FILE =====
 function processFile(file, periodo) {
-  const dati = parseWorkbook(wb, file.name);
-  // Adatta costi fissi in base al periodo selezionato
+
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const dati = parseWorkbook(wb, file.name);
+      // Adatta costi fissi in base al periodo selezionato
 if (periodo === "settimanale") {
   dati.costiGiorn = dati.costiGiorn * 7;
   dati.tipo = "settimana";
@@ -767,15 +776,6 @@ if (periodo === "giornaliera") {
   dati.tipo = "giorno";
 }
 
-  document.getElementById('home-screen').style.display = 'none';
-  document.getElementById('loading-screen').style.display = 'flex';
-  document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'array' });
-      const dati = parseWorkbook(wb, file.name);
       // Controlla se esiste già
       const esistente = CHIUSURE.find(c => c.id === dati.id);
       if (esistente) {
