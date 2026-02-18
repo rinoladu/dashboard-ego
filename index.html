@@ -558,6 +558,18 @@ let selectedIds = new Set();
 window.addEventListener('load', () => {
   loadFromStorage();
   renderGiorniList();
+  const tipoSelect = document.getElementById('periodo-select');
+const meseContainer = document.getElementById('mese-container');
+
+// Mostra il mese solo se selezioni "Mensile"
+tipoSelect.addEventListener('change', () => {
+  if (tipoSelect.value === 'mensile') {
+    meseContainer.style.display = 'block';
+  } else {
+    meseContainer.style.display = 'none';
+  }
+});
+
   document.getElementById('file-input').addEventListener('change', e => {
   if (e.target.files[0]) {
     const periodo = document.getElementById('periodo-select').value;
