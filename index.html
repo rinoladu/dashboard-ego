@@ -267,6 +267,39 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
         <option value="mensile">Mensile</option>
       </select>
     </div>
+    <!-- SELEZIONE MESE (visibile solo se mensile) -->
+<div id="mese-container" style="margin-bottom:1rem; display:none;">
+  <label style="color:#aaa; font-size:0.9rem;">
+    <strong>Mese di riferimento</strong>
+  </label>
+  <br>
+  <select id="mese-select"
+    style="
+      appearance:none;
+      background:#181818;
+      color:white;
+      border:1px solid #2c2c2c;
+      border-radius:8px;
+      padding:0.6rem;
+      margin-top:0.3rem;
+      width:100%;
+      max-width:250px;
+      font-size:0.95rem;
+    ">
+    <option value="gennaio">Gennaio</option>
+    <option value="febbraio">Febbraio</option>
+    <option value="marzo">Marzo</option>
+    <option value="aprile">Aprile</option>
+    <option value="maggio">Maggio</option>
+    <option value="giugno">Giugno</option>
+    <option value="luglio">Luglio</option>
+    <option value="agosto">Agosto</option>
+    <option value="settembre">Settembre</option>
+    <option value="ottobre">Ottobre</option>
+    <option value="novembre">Novembre</option>
+    <option value="dicembre">Dicembre</option>
+  </select>
+</div>
     
     <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
       <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
@@ -445,6 +478,18 @@ let selectedIds = new Set();
 window.addEventListener('load', () => {
   loadFromStorage();
   renderGiorniList();
+  const tipoSelect = document.getElementById('periodo-select');
+const meseContainer = document.getElementById('mese-container');
+
+// Mostra il mese solo se selezioni "Mensile"
+tipoSelect.addEventListener('change', () => {
+  if (tipoSelect.value === 'mensile') {
+    meseContainer.style.display = 'block';
+  } else {
+    meseContainer.style.display = 'none';
+  }
+});
+
   document.getElementById('file-input').addEventListener('change', e => {
     if (e.target.files[0]) {
       const periodo = document.getElementById('periodo-select').value;
