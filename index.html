@@ -827,7 +827,27 @@ if (periodo === "settimanale") {
 }
 
 if (periodo === "mensile") {
-  dati.costiGiorn = dati.costiGiorn * 30;
+
+  const mesiIndex = {
+    gennaio: 0,
+    febbraio: 1,
+    marzo: 2,
+    aprile: 3,
+    maggio: 4,
+    giugno: 5,
+    luglio: 6,
+    agosto: 7,
+    settembre: 8,
+    ottobre: 9,
+    novembre: 10,
+    dicembre: 11
+  };
+
+  const anno = new Date().getFullYear();
+  const index = mesiIndex[mese];
+  const giorniNelMese = new Date(anno, index + 1, 0).getDate();
+
+  dati.costiGiorn = dati.costiGiorn * giorniNelMese;
   dati.tipo = "mese";
 }
 
