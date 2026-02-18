@@ -317,16 +317,28 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <div class="tab" onclick="switchTab('analisi')" id="tab-analisi">Analisi</div>
   </div>
 
-  <!-- TAB GIORNI -->
-  <div id="panel-giorni">
-    <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
-      <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
-      <h3>Aggiungi chiusura</h3>
-      <p>Tocca per caricare un file Excel giornaliero</p>
-    </div>
-    <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
-    <div class="giorni-list" id="giorni-list"></div>
+<!-- TAB GIORNI -->
+<div id="panel-giorni">
+
+  <!-- SELEZIONE PERIODO -->
+  <div style="margin-bottom:1rem;">
+    <label for="periodo-select"><strong>Tipo di chiusura</strong></label><br>
+    <select id="periodo-select" style="padding:0.4rem; margin-top:0.3rem;">
+      <option value="giornaliera">Giornaliera</option>
+      <option value="settimanale">Settimanale</option>
+      <option value="mensile">Mensile</option>
+    </select>
   </div>
+
+  <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
+    <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
+    <h3>Aggiungi chiusura</h3>
+    <p>Tocca per caricare un file Excel</p>
+  </div>
+
+  <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
+  <div class="giorni-list" id="giorni-list"></div>
+</div>
 
   <!-- TAB ANALISI -->
   <div id="panel-analisi" style="display:none">
