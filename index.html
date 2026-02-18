@@ -572,7 +572,13 @@ function renderGiorniList() {
   container.innerHTML = CHIUSURE.map(c => `
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
       <div>
-        <div class="giorno-date">${formatDate(c.data)}</div>
+        <div class="giorno-date">
+  ${formatDate(c.data)}
+  <span class="tipo-badge ${c.tipo || 'giorno'}">
+    ${(c.tipo || 'giorno').toUpperCase()}
+  </span>
+</div>
+
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
@@ -739,16 +745,17 @@ function processFile(file) {
 // ===== PARSING =====
 function parseWorkbook(wb, filename) {
   const result = {
-    id: '',
-    data: '',
-    filename: filename || '',
-    chiusura: [],
-    foodDrinkCost: {},
-    iva: {},
-    costiGiorn: 0,
-    totImponibile: 0,
-    totMargine: 0,
-  };
+  id: '',
+  data: '',
+  tipo: 'giorno', // 👈 AGGIUNGI QUESTA RIGA
+  filename: filename || '',
+  chiusura: [],
+  foodDrinkCost: {},
+  iva: {},
+  costiGiorn: 0,
+  totImponibile: 0,
+  totMargine: 0,
+};
 
   // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
