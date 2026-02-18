@@ -806,8 +806,8 @@ function parseWorkbook(wb, filename) {
     item.imponibile = item.totale / 1.10;
     const fdEntry = result.foodDrinkCost[codKey];
 
-if (!fdEntry) {
-  // Se non ho il costo → margine = 0
+if (!fdEntry || !fdEntry.costoUnit || fdEntry.costoUnit === 0) {
+  // Se il costo non esiste o è zero → margine = 0
   item.costoUnit = 0;
   item.costoTot = 0;
   item.margineEuro = 0;
@@ -820,6 +820,7 @@ if (!fdEntry) {
     ? (item.margineEuro / item.imponibile) * 100
     : 0;
 }
+
     item.marginePerc = item.imponibile > 0 ? (item.margineEuro / item.imponibile) * 100 : 0;
   });
 
