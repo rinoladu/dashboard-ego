@@ -805,9 +805,21 @@ function parseWorkbook(wb, filename) {
     const codKey = String(Math.round(parseFloat(item.cod)));
     item.imponibile = item.totale / 1.10;
     const fdEntry = result.foodDrinkCost[codKey];
-    item.costoUnit = fdEntry ? fdEntry.costoUnit : 0;
-    item.costoTot = item.costoUnit * item.qty;
-    item.margineEuro = item.imponibile - item.costoTot;
+
+if (!fdEntry) {
+  // Se non ho il costo → margine = 0
+  item.costoUnit = 0;
+  item.costoTot = 0;
+  item.margineEuro = 0;
+  item.marginePerc = 0;
+} else {
+  item.costoUnit = fdEntry.costoUnit;
+  item.costoTot = item.costoUnit * item.qty;
+  item.margineEuro = item.imponibile - item.costoTot;
+  item.marginePerc = item.imponibile > 0
+    ? (item.margineEuro / item.imponibile) * 100
+    : 0;
+}
     item.marginePerc = item.imponibile > 0 ? (item.margineEuro / item.imponibile) * 100 : 0;
   });
 
