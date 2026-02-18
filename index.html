@@ -669,11 +669,16 @@ function renderGiorniList() {
   let lista = [];
 
 if (Array.isArray(CHIUSURE)) {
-  // vecchio formato
   lista = CHIUSURE;
 } else {
-  // nuovo formato
-  lista = CHIUSURE.generale || [];
+  const tipo = document.getElementById('periodo-select')?.value;
+
+  if (tipo === "mensile") {
+    const mese = document.getElementById('mese-select')?.value;
+    lista = CHIUSURE[mese] || [];
+  } else {
+    lista = CHIUSURE.generale || [];
+  }
 }
 
  if (!lista.length) {
