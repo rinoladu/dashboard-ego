@@ -26,13 +26,33 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
+/* ===== LOGIN ===== */
+#loginScreen {
+  position: fixed; width: 100%; height: 100%; background: #000;
+  display: flex; justify-content: center; align-items: center; z-index: 9999;
+}
+.login-box {
+  text-align: center; background: #111; padding: 40px;
+  border-radius: 15px; box-shadow: 0 0 30px rgba(0,0,0,0.6); width: 300px;
+}
+.logo { width: 80px; margin-bottom: 20px; }
+#loginScreen h2 { color: white; margin-bottom: 20px; }
+#loginScreen input {
+  width: 100%; padding: 10px; margin-bottom: 15px;
+  border-radius: 8px; border: none; outline: none;
+}
+#loginScreen button {
+  width: 100%; padding: 10px; background: #ffffff; color: #000;
+  border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
+}
+#loginScreen button:hover { background: #ccc; }
+#errorMsg { color: red; margin-top: 10px; }
+
 /* ===== HOME SCREEN ===== */
 #home-screen { display: flex; flex-direction: column; min-height: 100vh; }
 .home-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 1rem 1.2rem;
-  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
 }
 .app-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; }
@@ -43,21 +63,13 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   font-family: 'Barlow', sans-serif; transition: all 0.2s; white-space: nowrap;
 }
 .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
-.btn-sm.primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
-.btn-sm.primary:hover { opacity: 0.85; }
-.btn-sm.danger { border-color: #3a1515; color: var(--red); }
-.btn-sm.danger:hover { background: #1a0808; }
 
 /* TABS */
-.tabs {
-  display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 0 1rem;
-}
+.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1rem; }
 .tab {
   font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3);
-  padding: 0.7rem 0.8rem; cursor: pointer; border-bottom: 2px solid transparent;
-  transition: all 0.2s;
+  padding: 0.7rem 0.8rem; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
 }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
@@ -92,8 +104,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   display: block; width: 100%; background: var(--accent); color: #000;
   font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
   letter-spacing: 0.08em; text-transform: uppercase; padding: 0.8rem;
-  border-radius: 10px; border: none; cursor: pointer; margin-top: 0.8rem;
-  transition: opacity 0.2s;
+  border-radius: 10px; border: none; cursor: pointer; margin-top: 0.8rem; transition: opacity 0.2s;
 }
 .btn-analisi:hover { opacity: 0.85; }
 .btn-analisi:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -109,21 +120,37 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 .btn-quick:hover { border-color: var(--accent2); color: var(--accent2); }
 
 /* EMPTY STATE */
-.empty-state {
-  text-align: center; padding: 3rem 2rem; color: var(--text3);
-}
+.empty-state { text-align: center; padding: 3rem 2rem; color: var(--text3); }
 .empty-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
 .empty-state h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; color: var(--text2); margin-bottom: 0.5rem; }
 
 /* ADD DAY ZONE */
 .add-day-zone {
   margin: 1rem; border: 2px dashed var(--border); border-radius: 12px;
-  padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s;
-  background: var(--surface);
+  padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.3s; background: var(--surface);
 }
 .add-day-zone:hover { border-color: var(--accent); background: #1a1408; }
 .add-day-zone h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.3rem; }
 .add-day-zone p { font-size: 0.8rem; color: var(--text3); }
+
+/* TIPO SELECT */
+.tipo-select-box { padding: 1rem; }
+.tipo-select-box label { color: var(--text2); font-size: 0.85rem; display: block; margin-bottom: 0.5rem; }
+.tipo-select-box select {
+  appearance: none; background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.6rem; width: 100%; max-width: 300px; font-size: 0.9rem;
+  font-family: 'Barlow', sans-serif; cursor: pointer;
+}
+
+/* TIPO BADGE */
+.tipo-badge {
+  display: inline-block; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.5rem;
+}
+.tipo-badge.giorno { background: #1e3a5f; color: var(--accent2); }
+.tipo-badge.settimana { background: #2a1e5f; color: #a04be8; }
+.tipo-badge.mese { background: #1e3a2a; color: var(--green); }
 
 /* ===== LOADING ===== */
 #loading-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; gap: 1.5rem; }
@@ -193,12 +220,6 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 .badge.blue { background: #0e2a44; color: var(--accent2); }
 .no-data { text-align: center; color: var(--text3); padding: 2rem; font-size: 0.85rem; }
 
-/* TIPO BADGE */
-.tipo-badge { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 4px; }
-.tipo-badge.giorno { background: #1e3a5f; color: var(--accent2); }
-.tipo-badge.settimana { background: #2a1e5f; color: #a04be8; }
-.tipo-badge.mese { background: #1e3a2a; color: var(--green); }
-
 @media(min-width: 600px) {
   .summary-grid { grid-template-columns: repeat(3, 1fr); padding: 1.2rem; }
   .btn-grid { grid-template-columns: repeat(3, 1fr); }
@@ -208,7 +229,8 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 </style>
 </head>
 <body>
-  
+
+<!-- ===== LOGIN ===== -->
 <div id="loginScreen">
   <div class="login-box">
     <img src="logo.png" alt="Dashboard Logo" class="logo">
@@ -219,92 +241,10 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   </div>
 </div>
 
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
-
-  #loginScreen {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .login-box {
-    text-align: center;
-    background: #111;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6);
-    width: 300px;
-  }
-
-  .logo {
-    width: 80px;
-    margin-bottom: 20px;
-  }
-
-  h2 {
-    color: white;
-    margin-bottom: 20px;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    border: none;
-    outline: none;
-  }
-
-  button {
-    width: 100%;
-    padding: 10px;
-    background: #ffffff;
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-
-  button:hover {
-    background: #ccc;
-  }
-
-  #errorMsg {
-    color: red;
-    margin-top: 10px;
-  }
-</style>
-
-<script>
-  const correctPassword = "ego2026";
-
-  function checkPassword() {
-    const input = document.getElementById("passwordInput").value;
-
-    if (input === correctPassword) {
-      document.getElementById("loginScreen").style.display = "none";
-    } else {
-      document.getElementById("errorMsg").innerText = "Password errata";
-    }
-  }
-</script>
-
-
 <!-- ===== HOME SCREEN ===== -->
-<div id="home-screen">
+<div id="home-screen" style="display:none">
   <div class="home-header">
-    <div>
-      <div class="app-logo">EGO</div>
-    </div>
+    <div class="app-logo">EGO</div>
     <div class="home-actions">
       <button class="btn-sm" onclick="exportData()">📤 Esporta</button>
       <button class="btn-sm" onclick="document.getElementById('import-input').click()">📥 Importa</button>
@@ -317,105 +257,25 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <div class="tab" onclick="switchTab('analisi')" id="tab-analisi">Analisi</div>
   </div>
 
-<!-- TAB GIORNI -->
-<div id="panel-giorni">
-
-  <!-- SELEZIONE PERIODO -->
-  <div style="padding: 1rem;">
-    <label style="color:#aaa; font-size:0.9rem;">
-      <strong>Tipo di chiusura</strong>
-    </label>
-    <br>
-    <select id="periodo-select" style="appearance:none; background:#181818; color:white; border:1px solid #2c2c2c; border-radius:8px; padding:0.6rem; margin-top:0.3rem; width:100%; max-width:250px; font-size:0.95rem;">
-      <option value="giornaliera">Giornaliera</option>
-      <option value="settimanale">Settimanale</option>
-      <option value="mensile">Mensile</option>
-    </select>
+  <!-- TAB GIORNI -->
+  <div id="panel-giorni">
+    <div class="tipo-select-box">
+      <label>Tipo di chiusura</label>
+      <select id="periodo-select">
+        <option value="giornaliera">Giornaliera</option>
+        <option value="settimanale">Settimanale</option>
+        <option value="mensile">Mensile</option>
+      </select>
+    </div>
+    
+    <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
+      <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
+      <h3>Aggiungi chiusura</h3>
+      <p>Tocca per caricare un file Excel</p>
+    </div>
+    <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
+    <div class="giorni-list" id="giorni-list"></div>
   </div>
-
-  <!-- SELEZIONE MESE (visibile solo se mensile) -->
-  <div id="mese-container" style="padding: 0 1rem 1rem; display:none;">
-    <label style="color:#aaa; font-size:0.9rem;">
-      <strong>Mese di riferimento</strong>
-    </label>
-    <br>
-    <select id="mese-select" style="appearance:none; background:#181818; color:white; border:1px solid #2c2c2c; border-radius:8px; padding:0.6rem; margin-top:0.3rem; width:100%; max-width:250px; font-size:0.95rem;">
-      <option value="gennaio">Gennaio</option>
-      <option value="febbraio">Febbraio</option>
-      <option value="marzo">Marzo</option>
-      <option value="aprile">Aprile</option>
-      <option value="maggio">Maggio</option>
-      <option value="giugno">Giugno</option>
-      <option value="luglio">Luglio</option>
-      <option value="agosto">Agosto</option>
-      <option value="settembre">Settembre</option>
-      <option value="ottobre">Ottobre</option>
-      <option value="novembre">Novembre</option>
-      <option value="dicembre">Dicembre</option>
-    </select>
-  </div>
-
-  <!-- ZONA CARICAMENTO FILE -->
-  <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
-    <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
-    <h3>Aggiungi chiusura</h3>
-    <p>Tocca per caricare un file Excel</p>
-  </div>
-
-  <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
-  <div class="giorni-list" id="giorni-list"></div>
-</div>
-  <!-- SELEZIONE MESE (visibile solo se mensile) -->
-<div id="mese-container" style="margin-bottom:1rem; display:none;">
-  <label style="color:#aaa; font-size:0.9rem;">
-    <strong>Mese di riferimento</strong>
-  </label>
-  <br>
-  <select id="mese-select"
-    style="
-      appearance:none;
-      background:#181818;
-      color:white;
-      border:1px solid #2c2c2c;
-      border-radius:8px;
-      padding:0.6rem;
-      margin-top:0.3rem;
-      width:100%;
-      max-width:250px;
-      font-size:0.95rem;
-    ">
-    <option value="gennaio">Gennaio</option>
-    <option value="febbraio">Febbraio</option>
-    <option value="marzo">Marzo</option>
-    <option value="aprile">Aprile</option>
-    <option value="maggio">Maggio</option>
-    <option value="giugno">Giugno</option>
-    <option value="luglio">Luglio</option>
-    <option value="agosto">Agosto</option>
-    <option value="settembre">Settembre</option>
-    <option value="ottobre">Ottobre</option>
-    <option value="novembre">Novembre</option>
-    <option value="dicembre">Dicembre</option>
-  </select>
-</div>
-
-  <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
-    <div class="add-day-zone">
-
-  <h3>Importa file Excel</h3>
-
-  <input type="file" id="file-input" accept=".xlsx,.xls" hidden>
-
-</div>
-
-    <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
-    <h3>Aggiungi chiusura</h3>
-    <p>Tocca per caricare un file Excel</p>
-  </div>
-
-  <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
-  <div class="giorni-list" id="giorni-list"></div>
-</div>
 
   <!-- TAB ANALISI -->
   <div id="panel-analisi" style="display:none">
@@ -561,13 +421,23 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 </div>
 
 <script>
+// ===== LOGIN =====
+function checkPassword() {
+  if (document.getElementById("passwordInput").value === "ego2026") {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("home-screen").style.display = "flex";
+  } else {
+    document.getElementById("errorMsg").innerText = "Password errata";
+  }
+}
+
 // ===== COSTANTI =====
 const CATEGORIE_ESCLUSE = ['SERVIZIO', '--CLIENTE--'];
 const STORAGE_KEY = 'ego_chiusure_v1';
 
 // ===== STATO =====
-let CHIUSURE = [];       // array di oggetti giornata salvati
-let CURRENT_DATA = null; // dati attivi nella dashboard
+let CHIUSURE = [];
+let CURRENT_DATA = null;
 let activeChart = null;
 let selectedIds = new Set();
 
@@ -575,52 +445,25 @@ let selectedIds = new Set();
 window.addEventListener('load', () => {
   loadFromStorage();
   renderGiorniList();
-  const tipoSelect = document.getElementById('periodo-select');
-const meseContainer = document.getElementById('mese-container');
-
-// Mostra il mese solo se selezioni "Mensile"
-tipoSelect.addEventListener('change', () => {
-  if (tipoSelect.value === 'mensile') {
-    meseContainer.style.display = 'block';
-  } else {
-    meseContainer.style.display = 'none';
-  }
-});
-
   document.getElementById('file-input').addEventListener('change', e => {
-  if (e.target.files[0]) {
-    const periodo = document.getElementById('periodo-select').value;
-let mese = null;
-
-if (periodo === 'mensile') {
-  mese = document.getElementById('mese-select').value;
-}
-
-processFile(e.target.files[0], periodo, mese);
-
-  }
-  e.target.value = '';
-});
+    if (e.target.files[0]) {
+      const periodo = document.getElementById('periodo-select').value;
+      processFile(e.target.files[0], periodo);
+    }
+    e.target.value = '';
+  });
   const dz = document.querySelector('.add-day-zone');
   dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
   dz.addEventListener('dragleave', () => dz.style.borderColor = '');
   dz.addEventListener('drop', e => {
     e.preventDefault(); dz.style.borderColor = '';
     if (e.dataTransfer.files[0]) {
-  const periodo = document.getElementById('periodo-select').value;
-let mese = null;
-
-if (periodo === 'mensile') {
-  mese = document.getElementById('mese-select').value;
-}
-
-processFile(e.dataTransfer.files[0], periodo, mese);
-
-}
+      const periodo = document.getElementById('periodo-select').value;
+      processFile(e.dataTransfer.files[0], periodo);
+    }
   });
 });
 
-// ===== STORAGE =====
 // ===== STORAGE =====
 function loadFromStorage() {
   try {
@@ -653,7 +496,6 @@ function importData(e) {
     try {
       const data = JSON.parse(ev.target.result);
       if (!Array.isArray(data)) throw new Error('Formato non valido');
-      // Merge: aggiungi solo quelli non già presenti (per id)
       const existingIds = new Set(CHIUSURE.map(c => c.id));
       let added = 0;
       data.forEach(d => {
@@ -683,22 +525,7 @@ function switchTab(tab) {
 // ===== RENDER LISTE =====
 function renderGiorniList() {
   const container = document.getElementById('giorni-list');
-  let lista = [];
-
-if (Array.isArray(CHIUSURE)) {
-  lista = CHIUSURE;
-} else {
-  const tipo = document.getElementById('periodo-select')?.value;
-
-  if (tipo === "mensile") {
-    const mese = document.getElementById('mese-select')?.value;
-    lista = CHIUSURE[mese] || [];
-  } else {
-    lista = CHIUSURE.generale || [];
-  }
-}
-
- if (!lista.length) {
+  if (!CHIUSURE.length) {
     container.innerHTML = `<div class="empty-state">
       <span class="empty-icon">📋</span>
       <h3>Nessuna chiusura salvata</h3>
@@ -706,17 +533,13 @@ if (Array.isArray(CHIUSURE)) {
     </div>`;
     return;
   }
- container.innerHTML = lista.map(c => `
-
+  container.innerHTML = CHIUSURE.map(c => `
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
       <div>
         <div class="giorno-date">
-  ${formatDate(c.data)}
-  <span class="tipo-badge ${c.tipo || 'giorno'}">
-    ${(c.tipo || 'giorno').toUpperCase()}
-  </span>
-</div>
-
+          ${formatDate(c.data)}
+          ${c.tipo ? `<span class="tipo-badge ${c.tipo}">${c.tipo.toUpperCase()}</span>` : ''}
+        </div>
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
@@ -794,12 +617,10 @@ function apriAnalisi() {
   if (!selectedIds.size) return;
   const giorni = CHIUSURE.filter(c => selectedIds.has(c.id));
   const n = giorni.length;
-  // Aggrega i dati
   const merged = {
     chiusura: giorni.flatMap(g => g.chiusura),
     foodDrinkCost: giorni[0].foodDrinkCost,
-    iva: giorni[0].iva,
-    costiGiorn: giorni[0].costiGiorn * n, // costi fissi per il periodo
+    costiGiorn: giorni[0].costiGiorn * n,
   };
   const tipo = n === 1 ? 'giorno' : n <= 7 ? 'settimana' : 'mese';
   const label = n === 1 ? formatDate(giorni[0].data) :
@@ -811,7 +632,7 @@ function apriAnalisi() {
 function apriGiorno(id) {
   const c = CHIUSURE.find(x => x.id === id);
   if (!c) return;
-  apriDashboard(c, formatDate(c.data), 'giorno');
+  apriDashboard(c, formatDate(c.data), c.tipo || 'giorno');
 }
 
 function eliminaGiorno(id) {
@@ -827,10 +648,8 @@ function apriDashboard(data, label, tipo) {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('dashboard-screen').style.display = 'block';
   document.getElementById('dash-title').textContent = label;
-
   const tipoLabels = { giorno: 'Chiusura giornaliera', settimana: 'Analisi settimanale', mese: 'Analisi mensile' };
   document.getElementById('dash-subtitle').textContent = tipoLabels[tipo] || '';
-
   buildUI();
   window.scrollTo(0, 0);
 }
@@ -843,8 +662,7 @@ function tornaHome() {
 }
 
 // ===== PROCESS FILE =====
-function processFile(file, periodo, mese = null) {
-
+function processFile(file, periodo) {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('loading-screen').style.display = 'flex';
   document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
@@ -853,77 +671,22 @@ function processFile(file, periodo, mese = null) {
   reader.onload = e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
-      const dati = parseWorkbook(wb, file.name);
-      // Adatta costi fissi in base al periodo selezionato
-if (periodo === "settimanale") {
-  dati.costiGiorn = dati.costiGiorn * 7;
-  dati.tipo = "settimana";
-}
-
-if (periodo === "mensile") {
-
-  const mesiIndex = {
-    gennaio: 0,
-    febbraio: 1,
-    marzo: 2,
-    aprile: 3,
-    maggio: 4,
-    giugno: 5,
-    luglio: 6,
-    agosto: 7,
-    settembre: 8,
-    ottobre: 9,
-    novembre: 10,
-    dicembre: 11
-  };
-
-  const anno = new Date().getFullYear();
-  const index = mesiIndex[mese];
-  const giorniNelMese = new Date(anno, index + 1, 0).getDate();
-
-  dati.costiGiorn = dati.costiGiorn * giorniNelMese;
-  dati.tipo = "mese";
-}
-
-if (periodo === "giornaliera") {
-  dati.tipo = "giorno";
-}
-
-      // Controlla se esiste già
-      // Determina dove salvare
-let archivio;
-
-if (periodo === "mensile" && mese) {
-  if (!CHIUSURE[mese]) CHIUSURE[mese] = [];
-  archivio = CHIUSURE[mese];
-} else {
-  if (!CHIUSURE.generale) CHIUSURE.generale = [];
-  archivio = CHIUSURE.generale;
-}
-
-// Controlla se esiste già
-const esistente = archivio.find(c => c.id === dati.id);
-
-if (esistente) {
-  if (!confirm(`La chiusura del ${formatDate(dati.data)} esiste già. Sovrascrivere?`)) {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('home-screen').style.display = 'flex';
-    return;
-  }
-  CHIUSURE[periodo === "mensile" ? mese : "generale"] =
-    archivio.filter(c => c.id !== dati.id);
-  archivio = CHIUSURE[periodo === "mensile" ? mese : "generale"];
-}
-
-// Inserisci
-archivio.unshift(dati);
-archivio.sort((a,b) => b.data.localeCompare(a.data));
-
+      const dati = parseWorkbook(wb, file.name, periodo);
+      const esistente = CHIUSURE.find(c => c.id === dati.id);
+      if (esistente) {
+        if (!confirm(`La chiusura del ${formatDate(dati.data)} esiste già. Sovrascrivere?`)) {
+          document.getElementById('loading-screen').style.display = 'none';
+          document.getElementById('home-screen').style.display = 'flex';
+          return;
+        }
+        CHIUSURE = CHIUSURE.filter(c => c.id !== dati.id);
+      }
+      CHIUSURE.unshift(dati);
+      CHIUSURE.sort((a,b) => b.data.localeCompare(a.data));
       saveToStorage();
       renderGiorniList();
       document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('home-screen').style.display = 'flex';
-      // Apri subito la dashboard del giorno appena caricato
       apriGiorno(dati.id);
     } catch(err) {
       alert('Errore nel leggere il file: ' + err.message);
@@ -935,19 +698,18 @@ archivio.sort((a,b) => b.data.localeCompare(a.data));
 }
 
 // ===== PARSING =====
-function parseWorkbook(wb, filename) {
+function parseWorkbook(wb, filename, periodo) {
   const result = {
-  id: '',
-  data: '',
-  tipo: 'giorno', // 👈 AGGIUNGI QUESTA RIGA
-  filename: filename || '',
-  chiusura: [],
-  foodDrinkCost: {},
-  iva: {},
-  costiGiorn: 0,
-  totImponibile: 0,
-  totMargine: 0,
-};
+    id: '',
+    data: '',
+    tipo: periodo === 'settimanale' ? 'settimana' : periodo === 'mensile' ? 'mese' : 'giorno',
+    filename: filename || '',
+    chiusura: [],
+    foodDrinkCost: {},
+    costiGiorn: 0,
+    totImponibile: 0,
+    totMargine: 0,
+  };
 
   // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
@@ -986,7 +748,7 @@ function parseWorkbook(wb, filename) {
       }
     }
   }
-  
+
   // COSTI
   if (wb.Sheets['COSTI']) {
     const rows = XLSX.utils.sheet_to_json(wb.Sheets['COSTI'], { header: 1 });
@@ -999,38 +761,26 @@ function parseWorkbook(wb, filename) {
     }
   }
 
-  // Calcola valori per ogni riga
+  // Adatta costi in base al periodo
+  if (periodo === 'settimanale') result.costiGiorn *= 7;
+  if (periodo === 'mensile') result.costiGiorn *= 30;
+
+  // Calcola valori (IVA FISSA 10%)
   result.chiusura.forEach(item => {
     const codKey = String(Math.round(parseFloat(item.cod)));
-    item.imponibile = item.totale / 1.10;
+    item.imponibile = item.totale / 1.10; // IVA FISSA 10%
     const fdEntry = result.foodDrinkCost[codKey];
-
-if (!fdEntry || !fdEntry.costoUnit || fdEntry.costoUnit === 0) {
-  // Se il costo non esiste o è zero → margine = 0
-  item.costoUnit = 0;
-  item.costoTot = 0;
-  item.margineEuro = 0;
-  item.marginePerc = 0;
-} else {
-  item.costoUnit = fdEntry.costoUnit;
-  item.costoTot = item.costoUnit * item.qty;
-  item.margineEuro = item.imponibile - item.costoTot;
-  item.marginePerc = item.imponibile > 0
-    ? (item.margineEuro / item.imponibile) * 100
-    : 0;
-}
-
+    item.costoUnit = fdEntry ? fdEntry.costoUnit : 0;
+    item.costoTot = item.costoUnit * item.qty;
+    item.margineEuro = item.costoTot === 0 ? 0 : item.imponibile - item.costoTot;
     item.marginePerc = item.imponibile > 0 ? (item.margineEuro / item.imponibile) * 100 : 0;
   });
 
-  // Totali per la card nella home
   result.totImponibile = result.chiusura.reduce((s, r) => s + r.imponibile, 0);
   result.totMargine = result.chiusura.reduce((s, r) => s + r.margineEuro, 0);
 
-  // ID e data: usa la data dal nome file o quella di oggi
   const oggi = new Date().toISOString().slice(0, 10);
   result.data = oggi;
-  // Prova a estrarre data dal nome file (es: "CHIUSURA 15-01-2025.xlsx")
   const dateMatch = (result.filename || '').match(/(\d{1,2})[-_\/](\d{1,2})[-_\/](\d{2,4})/);
   if (dateMatch) {
     const [, d, m, y] = dateMatch;
