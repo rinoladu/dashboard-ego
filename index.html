@@ -1076,52 +1076,5 @@ function formatDate(d) {
   } catch { return d; }
 }
 </script>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
-    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "TUO_API_KEY",
-    authDomain: "TUO_AUTH_DOMAIN",
-    projectId: "TUO_PROJECT_ID",
-    storageBucket: "TUO_STORAGE_BUCKET",
-    messagingSenderId: "TUO_MSG_ID",
-    appId: "TUO_APP_ID"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // LOGIN FUNCTION
-  window.loginUser = function() {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        console.log("Login effettuato");
-      })
-      .catch((error) => {
-        alert("Errore login: " + error.message);
-      });
-  }
-
-  // LOGOUT
-  window.logoutUser = function() {
-    signOut(auth);
-  }
-
-  // Controllo stato login
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById("loginScreen").style.display = "none";
-      document.getElementById("home-screen").style.display = "flex";
-    } else {
-      document.getElementById("loginScreen").style.display = "flex";
-      document.getElementById("home-screen").style.display = "none";
-    }
-  });
-</script>
 </body>
 </html>
