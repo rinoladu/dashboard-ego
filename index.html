@@ -349,6 +349,31 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   </div>
 
   <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
+    <div class="add-day-zone">
+
+  <h3>Importa file Excel</h3>
+
+  <select id="periodo-select">
+    <option value="gennaio">Gennaio</option>
+    <option value="febbraio">Febbraio</option>
+    <option value="marzo">Marzo</option>
+    <option value="aprile">Aprile</option>
+    <option value="maggio">Maggio</option>
+    <option value="giugno">Giugno</option>
+    <option value="luglio">Luglio</option>
+    <option value="agosto">Agosto</option>
+    <option value="settembre">Settembre</option>
+    <option value="ottobre">Ottobre</option>
+    <option value="novembre">Novembre</option>
+    <option value="dicembre">Dicembre</option>
+  </select>
+
+  <p>Trascina qui il file oppure clicca</p>
+
+  <input type="file" id="file-input" accept=".xlsx,.xls" hidden>
+
+</div>
+
     <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
     <h3>Aggiungi chiusura</h3>
     <p>Tocca per caricare un file Excel</p>
@@ -523,20 +548,6 @@ window.addEventListener('load', () => {
   }
   e.target.value = '';
 });
-  <select id="periodo-select">
-  <option value="gennaio">Gennaio</option>
-  <option value="febbraio">Febbraio</option>
-  <option value="marzo">Marzo</option>
-  <option value="aprile">Aprile</option>
-  <option value="maggio">Maggio</option>
-  <option value="giugno">Giugno</option>
-  <option value="luglio">Luglio</option>
-  <option value="agosto">Agosto</option>
-  <option value="settembre">Settembre</option>
-  <option value="ottobre">Ottobre</option>
-  <option value="novembre">Novembre</option>
-  <option value="dicembre">Dicembre</option>
-</select>
   const dz = document.querySelector('.add-day-zone');
   dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
   dz.addEventListener('dragleave', () => dz.style.borderColor = '');
