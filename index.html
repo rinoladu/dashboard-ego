@@ -493,7 +493,14 @@ tipoSelect.addEventListener('change', () => {
   document.getElementById('file-input').addEventListener('change', e => {
     if (e.target.files[0]) {
       const periodo = document.getElementById('periodo-select').value;
-      processFile(e.target.files[0], periodo);
+let mese = null;
+
+if (periodo === 'mensile') {
+  mese = document.getElementById('mese-select').value;
+}
+
+processFile(e.target.files[0], periodo, mese);
+
     }
     e.target.value = '';
   });
@@ -504,7 +511,14 @@ tipoSelect.addEventListener('change', () => {
     e.preventDefault(); dz.style.borderColor = '';
     if (e.dataTransfer.files[0]) {
       const periodo = document.getElementById('periodo-select').value;
-      processFile(e.dataTransfer.files[0], periodo);
+let mese = null;
+
+if (periodo === 'mensile') {
+  mese = document.getElementById('mese-select').value;
+}
+
+processFile(e.dataTransfer.files[0], periodo, mese);
+
     }
   });
 });
@@ -707,7 +721,7 @@ function tornaHome() {
 }
 
 // ===== PROCESS FILE =====
-function processFile(file, periodo) {
+function processFile(file, periodo, mese = null) {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('loading-screen').style.display = 'flex';
   document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
@@ -808,7 +822,30 @@ function parseWorkbook(wb, filename, periodo) {
 
   // Adatta costi in base al periodo
   if (periodo === 'settimanale') result.costiGiorn *= 7;
-  if (periodo === 'mensile') result.costiGiorn *= 30;
+  if (periodo === "mensile") {
+
+  const mesiIndex = {
+    gennaio: 0,
+    febbraio: 1,
+    marzo: 2,
+    aprile: 3,
+    maggio: 4,
+    giugno: 5,
+    luglio: 6,
+    agosto: 7,
+    settembre: 8,
+    ottobre: 9,
+    novembre: 10,
+    dicembre: 11
+  };
+
+  const anno = new Date().getFullYear();
+  const index = mesiIndex[mese];
+  const giorniNelMese = new Date(anno, index + 1, 0).getDate();
+
+  dati.costiGiorn = dati.costiGiorn * giorniNelMese;
+  dati.tipo = "mese";
+}
 
   // Calcola valori (IVA FISSA 10%)
   result.chiusura.forEach(item => {
