@@ -1066,5 +1066,19 @@ function formatDate(d) {
   } catch { return d; }
 }
 </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyC3t_Zbiz2ndoMrY-1pV-D2wqyHBZKNOtg",
+  authDomain: "chiusure-gestionale.firebaseapp.com",
+  projectId: "chiusure-gestionale",
+  storageBucket: "chiusure-gestionale.firebasestorage.app",
+  messagingSenderId: "810975689135",
+  appId: "1:810975689135:web:6a59c1198fed2774b0d75a"
+};
+  // Initialize Firebase
+const app = initializeApp(firebaseConfig);
+</script>
 </body>
 </html>
