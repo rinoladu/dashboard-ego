@@ -26,6 +26,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
+<div id="loginScreen">
+  <h2>Login</h2>
+  <input type="email" id="loginEmail" placeholder="Email">
+  <input type="password" id="loginPassword" placeholder="Password">
+  <button onclick="loginUser()">Accedi</button>
+</div>
+
 /* ===== HOME SCREEN ===== */
 #home-screen { display: flex; flex-direction: column; min-height: 100vh; }
 .home-header {
@@ -1067,18 +1074,51 @@ function formatDate(d) {
 }
 </script>
   <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+    from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyC3t_Zbiz2ndoMrY-1pV-D2wqyHBZKNOtg",
-  authDomain: "chiusure-gestionale.firebaseapp.com",
-  projectId: "chiusure-gestionale",
-  storageBucket: "chiusure-gestionale.firebasestorage.app",
-  messagingSenderId: "810975689135",
-  appId: "1:810975689135:web:6a59c1198fed2774b0d75a"
-};
-  // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+    apiKey: "TUO_API_KEY",
+    authDomain: "TUO_AUTH_DOMAIN",
+    projectId: "TUO_PROJECT_ID",
+    storageBucket: "TUO_STORAGE_BUCKET",
+    messagingSenderId: "TUO_MSG_ID",
+    appId: "TUO_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // LOGIN FUNCTION
+  window.loginUser = function() {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        console.log("Login effettuato");
+      })
+      .catch((error) => {
+        alert("Errore login: " + error.message);
+      });
+  }
+
+  // LOGOUT
+  window.logoutUser = function() {
+    signOut(auth);
+  }
+
+  // Controllo stato login
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("home-screen").style.display = "flex";
+    } else {
+      document.getElementById("loginScreen").style.display = "flex";
+      document.getElementById("home-screen").style.display = "none";
+    }
+  });
 </script>
 </body>
 </html>
