@@ -730,7 +730,7 @@ function processFile(file, periodo, mese = null) {
   reader.onload = e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
-      const dati = parseWorkbook(wb, file.name, periodo);
+      const dati = parseWorkbook(wb, file.name, periodo, mese);
       const esistente = CHIUSURE.find(c => c.id === dati.id);
       if (esistente) {
         if (!confirm(`La chiusura del ${formatDate(dati.data)} esiste già. Sovrascrivere?`)) {
@@ -757,7 +757,8 @@ function processFile(file, periodo, mese = null) {
 }
 
 // ===== PARSING =====
-function parseWorkbook(wb, filename, periodo) {
+function parseWorkbook(wb, fileName, periodo, mese = null) {
+
   const result = {
     id: '',
     data: '',
