@@ -787,39 +787,7 @@ function parseWorkbook(wb, filename) {
       }
     }
   }
-
-  // REGOLE (IVA) — ricerca dinamica colonne
-  if (wb.Sheets['REGOLE']) {
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets['REGOLE'], { header: 1 });
-    let ivaColIdx = -1, codColIdx = -1, dataStart = -1;
-    for (let i = 0; i < Math.min(rows.length, 10); i++) {
-      for (let j = 0; j < rows[i].length; j++) {
-        if (rows[i][j] && String(rows[i][j]).trim().toUpperCase() === 'IVA') {
-          ivaColIdx = j; dataStart = i + 1; break;
-        }
-      }
-      if (dataStart >= 0) break;
-    }
-    if (dataStart > 0) {
-      const headerRow = rows[dataStart - 1];
-      for (let j = 0; j < headerRow.length; j++) {
-        if (headerRow[j] && String(headerRow[j]).includes('COD')) { codColIdx = j; break; }
-      }
-    }
-    if (ivaColIdx >= 0 && codColIdx >= 0) {
-      for (let i = dataStart; i < rows.length; i++) {
-        const r = rows[i];
-        const codRaw = r[codColIdx];
-        const ivaRaw = r[ivaColIdx];
-        if (codRaw != null && ivaRaw != null) {
-          const codKey = String(Math.round(parseFloat(codRaw)));
-          const iva = parseFloat(ivaRaw);
-          if (codKey !== 'NaN' && !isNaN(iva)) result.iva[codKey] = iva;
-        }
-      }
-    }
-  }
-
+  
   // COSTI
   if (wb.Sheets['COSTI']) {
     const rows = XLSX.utils.sheet_to_json(wb.Sheets['COSTI'], { header: 1 });
@@ -835,12 +803,11 @@ function parseWorkbook(wb, filename) {
   // Calcola valori per ogni riga
   result.chiusura.forEach(item => {
     const codKey = String(Math.round(parseFloat(item.cod)));
-    const ivaRate = result.iva[codKey] || 1.1;
-    item.imponibile = item.totale / ivaRate;
+    item.imponibile = item.totale / 1.10;
     const fdEntry = result.foodDrinkCost[codKey];
     item.costoUnit = fdEntry ? fdEntry.costoUnit : 0;
     item.costoTot = item.costoUnit * item.qty;
-    item.margineEuro = item.costoTot === 0 ? 0 : item.imponibile - item.costoTot;
+    item.margineEuro = item.imponibile - item.costoTot;
     item.marginePerc = item.imponibile > 0 ? (item.margineEuro / item.imponibile) * 100 : 0;
   });
 
