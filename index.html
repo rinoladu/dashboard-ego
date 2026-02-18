@@ -756,7 +756,9 @@ function processFile(file, periodo, mese = null) {
   reader.readAsArrayBuffer(file);
 }
 
-// ===== PARSING =====
+console.log("MESE DENTRO PARSE:", mese);
+
+  // ===== PARSING =====
 function parseWorkbook(wb, filename, periodo, mese = null) {
 
   const result = {
