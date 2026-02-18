@@ -569,7 +569,16 @@ function renderGiorniList() {
     </div>`;
     return;
   }
-  container.innerHTML = CHIUSURE.map(c => `
+  container.innerHTML = `
+  <div style="margin-bottom:15px;">
+    <button onclick="creaRiepilogo('settimana')">
+      📅 Crea Settimana
+    </button>
+    <button onclick="creaRiepilogo('mese')" style="margin-left:10px;">
+      🗓️ Crea Mese
+    </button>
+  </div>
+` + CHIUSURE.map(c => `
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
       <div>
         <div class="giorno-date">
