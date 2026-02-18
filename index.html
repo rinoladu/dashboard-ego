@@ -751,7 +751,22 @@ function tornaHome() {
 
 // ===== PROCESS FILE =====
 function processFile(file, periodo) {
-  console.log("Periodo ricevuto:", periodo);
+  const dati = parseWorkbook(wb, file.name);
+  // Adatta costi fissi in base al periodo selezionato
+if (periodo === "settimanale") {
+  dati.costiGiorn = dati.costiGiorn * 7;
+  dati.tipo = "settimana";
+}
+
+if (periodo === "mensile") {
+  dati.costiGiorn = dati.costiGiorn * 30;
+  dati.tipo = "mese";
+}
+
+if (periodo === "giornaliera") {
+  dati.tipo = "giorno";
+}
+
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('loading-screen').style.display = 'flex';
   document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
