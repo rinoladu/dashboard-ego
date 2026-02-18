@@ -434,6 +434,7 @@ let selectedIds = new Set();
 
 // ===== INIT =====
 window.addEventListener('load', () => {
+  document.getElementById('home-screen').style.display = 'flex';
   loadFromStorage();
   renderGiorniList();
   const tipoSelect = document.getElementById('periodo-select');
