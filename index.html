@@ -322,8 +322,22 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 
   <!-- SELEZIONE PERIODO -->
   <div style="margin-bottom:1rem;">
-    <label for="periodo-select"><strong>Tipo di chiusura</strong></label><br>
-    <select id="periodo-select" style="padding:0.4rem; margin-top:0.3rem;">
+   <label for="periodo-select" style="color:#aaa; font-size:0.9rem;">
+  <strong>Tipo di chiusura</strong>
+</label>
+<br>
+    <select id="periodo-select" 
+      style="
+    background-color:#1e1e1e;
+    color:white;
+    border:1px solid #333;
+    border-radius:8px;
+    padding:0.5rem;
+    margin-top:0.3rem;
+    width:100%;
+    max-width:250px;
+    font-size:0.95rem;
+  ">
       <option value="giornaliera">Giornaliera</option>
       <option value="settimanale">Settimanale</option>
       <option value="mensile">Mensile</option>
