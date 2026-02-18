@@ -526,15 +526,21 @@ window.addEventListener('load', () => {
   loadFromStorage();
   renderGiorniList();
   document.getElementById('file-input').addEventListener('change', e => {
-    if (e.target.files[0]) processFile(e.target.files[0]);
-    e.target.value = '';
-  });
+  if (e.target.files[0]) {
+    const periodo = document.getElementById('periodo-select').value;
+    processFile(e.target.files[0], periodo);
+  }
+  e.target.value = '';
+});
   const dz = document.querySelector('.add-day-zone');
   dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
   dz.addEventListener('dragleave', () => dz.style.borderColor = '');
   dz.addEventListener('drop', e => {
     e.preventDefault(); dz.style.borderColor = '';
-    if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files[0]) {
+  const periodo = document.getElementById('periodo-select').value;
+  processFile(e.dataTransfer.files[0], periodo);
+}
   });
 });
 
@@ -744,7 +750,8 @@ function tornaHome() {
 }
 
 // ===== PROCESS FILE =====
-function processFile(file) {
+function processFile(file, periodo) {
+  console.log("Periodo ricevuto:", periodo);
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('loading-screen').style.display = 'flex';
   document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
