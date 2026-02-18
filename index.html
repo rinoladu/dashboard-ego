@@ -756,8 +756,6 @@ function processFile(file, periodo, mese = null) {
   reader.readAsArrayBuffer(file);
 }
 
-console.log("MESE DENTRO PARSE:", mese);
-
   // ===== PARSING =====
 function parseWorkbook(wb, filename, periodo, mese = null) {
 
@@ -824,8 +822,9 @@ function parseWorkbook(wb, filename, periodo, mese = null) {
   }
 
   // Adatta costi in base al periodo
-  if (periodo === 'settimanale') result.costiGiorn *= 7;
-  if (periodo === "mensile" && mese) {
+if (periodo === 'settimanale') result.costiGiorn *= 7;
+
+if (periodo === "mensile" && mese) {
 
   const mesiIndex = {
     gennaio: 0,
@@ -847,10 +846,10 @@ function parseWorkbook(wb, filename, periodo, mese = null) {
 
   if (index !== undefined) {
     const giorniNelMese = new Date(anno, index + 1, 0).getDate();
-    dati.costiGiorn = dati.costiGiorn * giorniNelMese;
+    result.costiGiorn = result.costiGiorn * giorniNelMese;
   }
 
-  dati.tipo = "mese";
+  result.tipo = "mese";
 }
 
   // Calcola valori (IVA FISSA 10%)
