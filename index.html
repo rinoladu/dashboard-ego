@@ -822,7 +822,7 @@ function parseWorkbook(wb, filename, periodo) {
 
   // Adatta costi in base al periodo
   if (periodo === 'settimanale') result.costiGiorn *= 7;
-  if (periodo === "mensile") {
+  if (periodo === "mensile" && mese) {
 
   const mesiIndex = {
     gennaio: 0,
@@ -841,9 +841,12 @@ function parseWorkbook(wb, filename, periodo) {
 
   const anno = new Date().getFullYear();
   const index = mesiIndex[mese];
-  const giorniNelMese = new Date(anno, index + 1, 0).getDate();
 
-  dati.costiGiorn = dati.costiGiorn * giorniNelMese;
+  if (index !== undefined) {
+    const giorniNelMese = new Date(anno, index + 1, 0).getDate();
+    dati.costiGiorn = dati.costiGiorn * giorniNelMese;
+  }
+
   dati.tipo = "mese";
 }
 
