@@ -26,13 +26,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-<div id="loginScreen">
-  <h2>Login</h2>
-  <input type="email" id="loginEmail" placeholder="Email">
-  <input type="password" id="loginPassword" placeholder="Password">
-  <button onclick="loginUser()">Accedi</button>
-</div>
-
 /* ===== HOME SCREEN ===== */
 #home-screen { display: flex; flex-direction: column; min-height: 100vh; }
 .home-header {
@@ -217,7 +210,13 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 </style>
 </head>
 <body>
-
+<div id="loginScreen">
+  <h2>Login</h2>
+  <input type="email" id="loginEmail" placeholder="Email">
+  <input type="password" id="loginPassword" placeholder="Password">
+  <button onclick="loginUser()">Accedi</button>
+</div>
+<div id="home-screen">
 <!-- ===== HOME SCREEN ===== -->
 <div id="home-screen">
   <div class="home-header">
