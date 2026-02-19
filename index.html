@@ -900,8 +900,6 @@ if (periodo === "mensile" && mese) {
   result.totMargine = result.chiusura.reduce((s, r) => s + r.margineEuro, 0);
   result.margEff = result.totMargine - result.costiGiorn;
 
-  const oggi = new Date().toISOString().slice(0, 10);
-  result.data = oggi;
   const dateMatch = (result.filename || '').match(/(\d{1,2})[-_\/](\d{1,2})[-_\/](\d{2,4})/);
   if (dateMatch) {
     const [, d, m, y] = dateMatch;
