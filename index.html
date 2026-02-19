@@ -780,20 +780,23 @@ if (periodo === 'mensile') {
 
   // GIORNALIERA → prendo data dal nome file
   const match = filename.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})/);
-  if (match) {
-    const giorno = match[1];
-    const mese = match[2];
-    const anno = match[3];
 
-    result.data = `${anno}-${mese}-${giorno}`;
-    result.titolo = `${giorno}-${mese}-${anno}`;
-  } else {
-    // fallback sicurezza
-    result.data = null;
-    result.titolo = 'Senza data';
+if (match) {
+  let giorno = match[1].padStart(2, '0');
+  let meseFile = match[2].padStart(2, '0');
+  let annoFile = match[3];
+
+  if (annoFile.length === 2) {
+    annoFile = '20' + annoFile;
   }
 
+  result.data = `${annoFile}-${meseFile}-${giorno}`;
+  result.titolo = `${giorno}-${meseFile}-${annoFile}`;
+} else {
+  console.log("⚠️ Nessuna data trovata nel nome file");
+  return null; // così almeno capiamo se è questo
 }
+
 
   // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
