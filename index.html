@@ -563,6 +563,7 @@ function renderGiorniList() {
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
+          <div class="giorno-stat">Marg. Eff. <span>${fmt(c.margEff)}</span></div>
         </div>
       </div>
       <div class="giorno-actions" onclick="event.stopPropagation()">
@@ -585,6 +586,7 @@ function renderGiorniListAnalisi() {
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
+          <div class="giorno-stat">Marg. Eff. <span>${fmt(c.margEff)}</span></div>
         </div>
       </div>
       <div style="font-size:1.2rem">${selectedIds.has(c.id) ? '✓' : ''}</div>
