@@ -766,6 +766,38 @@ if (periodo === 'mensile') {
 
     result.titolo = meseNome.charAt(0).toUpperCase() + meseNome.slice(1) + ' ' + anno;
 
+    const mesiIndex = {
+      gennaio: 0, febbraio: 1, marzo: 2, aprile: 3,
+      maggio: 4, giugno: 5, luglio: 6, agosto: 7,
+      settembre: 8, ottobre: 9, novembre: 10, dicembre: 11
+    };
+
+    const dataObj = new Date(anno, mesiIndex[meseNome], 1);
+    result.data = dataObj.toISOString().split('T')[0];
+  }
+
+} else {
+
+  // GIORNALIERA / SETTIMANALE
+  const match = filename.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})/);
+
+  if (match) {
+    let giorno = match[1].padStart(2, '0');
+    let meseFile = match[2].padStart(2, '0');
+    let annoFile = match[3];
+
+    if (annoFile.length === 2) {
+      annoFile = '20' + annoFile;
+    }
+
+    result.data = `${annoFile}-${meseFile}-${giorno}`;
+    result.titolo = `${giorno}-${meseFile}-${annoFile}`;
+  } else {
+    throw new Error("Data non trovata nel nome file");
+  }
+
+}
+
     // Data tecnica per ordinamento (uso primo giorno del mese)
     const mesiIndex = {
       gennaio: 0, febbraio: 1, marzo: 2, aprile: 3,
