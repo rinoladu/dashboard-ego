@@ -440,7 +440,7 @@ window.addEventListener('load', () => {
   loadFromStorage();
   renderGiorniList();
   const tipoSelect = document.getElementById('periodo-select');
-const meseContainer = document.getElementById('mese-container');
+  const meseContainer = document.getElementById('mese-container');
 
 // Mostra il mese solo se selezioni "Mensile"
 tipoSelect.addEventListener('change', () => {
@@ -557,7 +557,7 @@ function renderGiorniList() {
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
       <div>
         <div class="giorno-date">
-          ${formatDate(c.data)}
+          ${c.titolo || formatDate(c.data)}
           ${c.tipo ? `<span class="tipo-badge ${c.tipo}">${c.tipo.toUpperCase()}</span>` : ''}
         </div>
         <div class="giorno-meta">
@@ -582,7 +582,7 @@ function renderGiorniListAnalisi() {
   container.innerHTML = CHIUSURE.map(c => `
     <div class="giorno-card ${selectedIds.has(c.id) ? 'selected' : ''}" onclick="toggleSelezione('${c.id}')">
       <div>
-        <div class="giorno-date">${formatDate(c.data)}</div>
+        <div class="giorno-date">${c.titolo || formatDate(c.data)}</div>
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
@@ -733,6 +733,41 @@ function parseWorkbook(wb, filename, periodo, mese = null) {
     totImponibile: 0,
     totMargine: 0,
   };
+
+  // ===== TITOLAZIONE =====
+
+if (periodo === 'mensile') {
+
+  const match = filename.match(/(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/i);
+
+  if (match) {
+    const meseNome = match[1].toLowerCase();
+    const anno = match[2];
+
+    result.titolo = meseNome.charAt(0).toUpperCase() + meseNome.slice(1) + ' ' + anno;
+
+    // Data tecnica per ordinamento (uso primo giorno del mese)
+    const mesiIndex = {
+      gennaio: 0, febbraio: 1, marzo: 2, aprile: 3,
+      maggio: 4, giugno: 5, luglio: 6, agosto: 7,
+      settembre: 8, ottobre: 9, novembre: 10, dicembre: 11
+    };
+
+    const dataObj = new Date(anno, mesiIndex[meseNome], 1);
+    result.data = dataObj.toISOString().split('T')[0];
+
+  } else {
+    result.titolo = 'Mensile';
+    result.data = new Date().toISOString().split('T')[0];
+  }
+
+} else {
+  // Giornaliera o settimanale
+  const oggi = new Date();
+  result.data = oggi.toISOString().split('T')[0];
+  result.titolo = formatDate(result.data);
+}
+
 
   // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
