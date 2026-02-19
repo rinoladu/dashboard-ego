@@ -208,13 +208,13 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   display: none !important;
 }  
 .positivo {
-  color: #22c55e;
-  font-weight: 700;
+  color: #16a34a;
+  font-weight: bold;
 }
 
 .negativo {
-  color: #ef4444;
-  font-weight: 700;
+  color: #dc2626;
+  font-weight: bold;
 }
 
 </style>
@@ -777,9 +777,24 @@ if (periodo === 'mensile') {
     result.data = dataObj.toISOString().split('T')[0];
 
   } else {
-    result.titolo = 'Mensile';
-    result.data = new Date().toISOString().split('T')[0];
+
+  // GIORNALIERA → prendo data dal nome file
+  const match = file.name.match(/(\d{2})-(\d{2})-(\d{4})/);
+
+  if (match) {
+    const giorno = match[1];
+    const mese = match[2];
+    const anno = match[3];
+
+    result.data = `${anno}-${mese}-${giorno}`;
+    result.titolo = `${giorno}-${mese}-${anno}`;
+  } else {
+    // fallback sicurezza
+    result.data = null;
+    result.titolo = 'Senza data';
   }
+
+}
 
 } else {
   // Giornaliera o settimanale
