@@ -779,8 +779,7 @@ if (periodo === 'mensile') {
   } else {
 
   // GIORNALIERA → prendo data dal nome file
-  const match = file.name.match(/(\d{2})-(\d{2})-(\d{4})/);
-
+  const match = filename.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})/);
   if (match) {
     const giorno = match[1];
     const mese = match[2];
@@ -795,14 +794,6 @@ if (periodo === 'mensile') {
   }
 
 }
-
-} else {
-  // Giornaliera o settimanale
-  const oggi = new Date();
-  result.data = oggi.toISOString().split('T')[0];
-  result.titolo = formatDate(result.data);
-}
-
 
   // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
