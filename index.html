@@ -6,7 +6,6 @@
 <title>EGO Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -496,34 +495,15 @@ processFile(e.dataTransfer.files[0], periodo, mese);
 });
 
 // ===== STORAGE =====
-async function loadFromStorage() {
+function loadFromStorage() {
   try {
-    // 1. Chiediamo i dati a Supabase (tabella 'chiusure')
-    const { data, error } = await supabaseClient
-      .from('chiusure')
-      .select('*')
-      .order('data', { ascending: false });
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) CHIUSURE = JSON.parse(raw);
+  } catch(e) { CHIUSURE = []; }
+}
 
-    if (error) throw error;
-
-    if (data && data.length > 0) {
-      // 2. Se ci sono dati, li mettiamo nell'array CHIUSURE
-      // Usiamo 'raw_data' che contiene l'oggetto completo
-      CHIUSURE = data.map(item => item.raw_data);
-      console.log("Dati caricati da Supabase:", CHIUSURE.length);
-    } else {
-      // 3. Se il database è vuoto, proviamo a vedere se c'è qualcosa nel vecchio localStorage
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) CHIUSURE = JSON.parse(raw);
-    }
-    
-    // 4. Aggiorniamo l'interfaccia
-    renderGiorniList();
-    updateCharts();
-    
-  } catch(e) {
-    console.error("Errore durante il caricamento:", e);
-  }
+function saveToStorage() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(CHIUSURE)); } catch(e) {}
 }
 
 // ===== EXPORT / IMPORT =====
