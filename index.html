@@ -711,6 +711,7 @@ function processFile(file, periodo, mese = null) {
 
   const reader = new FileReader();
   reader.onload = e => {
+   console.log("PROCESS FILE PARTITO");
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
       const dati = parseWorkbook(wb, file.name, periodo, mese);
