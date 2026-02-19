@@ -799,38 +799,6 @@ if (periodo === 'mensile') {
 
 }
 
-    // Data tecnica per ordinamento (uso primo giorno del mese)
-    const mesiIndex = {
-      gennaio: 0, febbraio: 1, marzo: 2, aprile: 3,
-      maggio: 4, giugno: 5, luglio: 6, agosto: 7,
-      settembre: 8, ottobre: 9, novembre: 10, dicembre: 11
-    };
-
-    const dataObj = new Date(anno, mesiIndex[meseNome], 1);
-    result.data = dataObj.toISOString().split('T')[0];
-
-  } else {
-
-  // GIORNALIERA → prendo data dal nome file
-  const match = filename.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})/);
-
-if (match) {
-  let giorno = match[1].padStart(2, '0');
-  let meseFile = match[2].padStart(2, '0');
-  let annoFile = match[3];
-
-  if (annoFile.length === 2) {
-    annoFile = '20' + annoFile;
-  }
-
-  result.data = `${annoFile}-${meseFile}-${giorno}`;
-  result.titolo = `${giorno}-${meseFile}-${annoFile}`;
-} else {
-  console.log("⚠️ Nessuna data trovata nel nome file");
-  return null; // così almeno capiamo se è questo
-}
-}
-
   // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
     const rows = XLSX.utils.sheet_to_json(wb.Sheets['CHIUSURA'], { header: 1 });
