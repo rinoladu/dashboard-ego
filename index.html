@@ -23,6 +23,35 @@
   --btn-blue: #1e3a5f;
   --btn-orange: #4a2e0f;
 }
+body.light {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #e8eaed;
+  --border: #d0d4da;
+  --accent: #c9930a;
+  --accent2: #1a6fc4;
+  --text: #0a0c0f;
+  --text2: #3a4250;
+  --text3: #7a8494;
+  --green: #16a34a;
+  --red: #dc2626;
+  --btn-blue: #dbeafe;
+  --btn-orange: #fef3c7;
+}
+body.light .btn-stat.blue { background: #dbeafe; color: #1a6fc4; border-color: #93c5fd; }
+body.light .btn-stat.orange { background: #fef3c7; color: #c9930a; border-color: #fcd34d; }
+body.light .tipo-badge.giorno { background: #dbeafe; color: #1a6fc4; }
+body.light .tipo-badge.settimana { background: #ede9fe; color: #7c3aed; }
+body.light .tipo-badge.mese { background: #dcfce7; color: #16a34a; }
+body.light .badge.gold { background: #fef3c7; color: #c9930a; }
+body.light .badge.blue { background: #dbeafe; color: #1a6fc4; }
+body.light .stat-table th { background: #e8eaed; }
+body.light .mini-bar-fill { color: #fff; }
+body.light .btn-note.has-note { background: #fef3c7; }
+body.light .modal { background: var(--surface); }
+
+/* Theme toggle button */
+.btn-theme { font-size: 1rem; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
@@ -339,6 +368,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <div class="home-actions">
       <span class="sync-dot" id="sync-dot"></span>
       <span class="sync-label" id="sync-label">—</span>
+      <button class="btn-sm btn-theme" onclick="toggleTheme()" id="btn-theme" title="Cambia tema">🌙</button>
       <button class="btn-sm" onclick="exportData()">📤 <span class="btn-label">Esporta</span></button>
       <button class="btn-sm" onclick="document.getElementById('import-input').click()">📥 <span class="btn-label">Importa</span></button>
       <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
@@ -586,13 +616,36 @@ window.logoutUtente = async () => {
   document.getElementById('login-screen').style.display = 'flex';
 };
 
-onAuthStateChanged(auth, user => {
+window._savePreferenza = async (chiave, valore) => {
+  if (!currentUser) return;
+  const ref = doc(db, 'users', currentUser.uid, 'preferenze', chiave);
+  await setDoc(ref, { valore });
+};
+
+window._loadPreferenza = async (chiave) => {
+  if (!currentUser) return null;
+  try {
+    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const ref = doc(db, 'users', currentUser.uid, 'preferenze', chiave);
+    const snap = await getDoc(ref);
+    return snap.exists() ? snap.data().valore : null;
+  } catch(e) { return null; }
+};
+
+onAuthStateChanged(auth, async user => {
   if (user) {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('loading-screen').style.display = 'flex';
     document.getElementById('loading-msg').textContent = 'Caricamento dati...';
     setSyncStatus('syncing', 'Sincronizzazione...');
+    // Carica preferenza tema
+    try {
+      const ref = doc(db, 'users', user.uid, 'preferenze', 'tema');
+      const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const snap = await getDoc(ref);
+      if (snap.exists()) applyTheme(snap.data().valore);
+    } catch(e) {}
     subscribeToData();
   } else {
     currentUser = null;
@@ -747,6 +800,27 @@ function importData(e) {
   };
   reader.readAsText(file);
   e.target.value = '';
+}
+
+// ===== TEMA =====
+let currentTheme = 'dark';
+
+function applyTheme(theme) {
+  currentTheme = theme;
+  if (theme === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('btn-theme').textContent = '☀️';
+  } else {
+    document.body.classList.remove('light');
+    document.getElementById('btn-theme').textContent = '🌙';
+  }
+}
+
+async function toggleTheme() {
+  const nuovoTema = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme(nuovoTema);
+  // Salva preferenza su Firestore
+  try { await window._savePreferenza('tema', nuovoTema); } catch(e) {}
 }
 
 // ===== TABS =====
