@@ -308,14 +308,30 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 
 /* TOTALI RAPIDI */
 .totali-bar {
-  margin: 0 1rem 0.5rem; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 0.7rem 1rem;
-  display: flex; gap: 1rem; flex-wrap: wrap;
+  margin: 0.6rem 1rem 0.3rem; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.8rem 1rem; display: grid;
+  grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem;
 }
-.totali-item { font-size: 0.72rem; color: var(--text3); }
-.totali-item span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text2); margin-left: 0.3rem; }
-.totali-item span.acc { color: var(--accent); }
-.totali-item span.grn { color: var(--green); }
+.totali-item {
+  display: flex; flex-direction: column; gap: 0.1rem;
+}
+.totali-item .t-label {
+  font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text3); font-family: 'Barlow Condensed', sans-serif; font-weight: 600;
+}
+.totali-item .t-value {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text2);
+}
+.totali-item .t-value.acc { color: var(--accent); }
+.totali-item .t-value.grn { color: var(--green); }
+.totali-item .t-value.red { color: var(--red); }
+.totali-divider {
+  grid-column: 1 / -1; border: none; border-top: 1px solid var(--border); margin: 0.2rem 0;
+}
+.totali-footer {
+  grid-column: 1 / -1; font-size: 0.65rem; color: var(--text3);
+  font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em; text-transform: uppercase;
+}
 
 /* NOTE MODAL */
 .note-area {
@@ -475,6 +491,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <div class="card"><div class="card-label">Incasso lordo (IVA incl.)</div><div class="card-value accent" id="s-lordo">—</div></div>
     <div class="card"><div class="card-label">Incasso imponibile</div><div class="card-value accent" id="s-incasso">—</div></div>
     <div class="card"><div class="card-label">Margine chiusura</div><div class="card-value green" id="s-margine">—</div></div>
+    <div class="card"><div class="card-label">Margine %</div><div class="card-value green" id="s-margine-perc">—</div></div>
     <div class="card"><div class="card-label">Break Even</div><div class="card-value blue" id="s-bep">—</div></div>
     <div class="card"><div class="card-label">Costi fissi/giorno</div><div class="card-value" id="s-costi-fissi">—</div></div>
     <div class="card"><div class="card-label">Marg. effettivo</div><div class="card-value" id="s-marg-eff">—</div><div class="progress-bar-wrap"><div class="progress-bar-fill" id="s-progress" style="width:0%"></div></div></div>
@@ -892,17 +909,21 @@ function renderGiorniList() {
     const totLordo = totInc * 1.10;
     const totMarg = tuttiTipo.reduce((s,c) => s+(c.totMargine||0), 0);
     const totMargEff = tuttiTipo.reduce((s,c) => s+(c.margEff||0), 0);
-    totaliBar.style.display = 'flex';
+    const margPercMedia = totInc > 0 ? (totMarg / totInc * 100) : 0;
+    totaliBar.style.display = 'grid';
     totaliBar.innerHTML = `
-      <div class="totali-item">Lordo tot. <span class="acc">${fmt(totLordo)}</span></div>
-      <div class="totali-item">Media lordo <span>${fmt(totLordo/n)}</span></div>
-      <div class="totali-item">Impon. tot. <span class="acc">${fmt(totInc)}</span></div>
-      <div class="totali-item">Media impon. <span>${fmt(totInc/n)}</span></div>
-      <div class="totali-item">Margine tot. <span class="grn">${fmt(totMarg)}</span></div>
-      <div class="totali-item">Media marg. <span class="grn">${fmt(totMarg/n)}</span></div>
-      <div class="totali-item">Marg. eff. tot. <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
-      <div class="totali-item">Media m.eff. <span class="${(totMargEff/n)>=0?'grn':'negativo'}">${fmt(totMargEff/n)}</span></div>
-      <div class="totali-item" style="color:var(--text3)">su ${n} chiusure</div>
+      <div class="totali-item"><div class="t-label">Lordo totale</div><div class="t-value acc">${fmt(totLordo)}</div></div>
+      <div class="totali-item"><div class="t-label">Media lordo</div><div class="t-value">${fmt(totLordo/n)}</div></div>
+      <div class="totali-item"><div class="t-label">Imponibile totale</div><div class="t-value acc">${fmt(totInc)}</div></div>
+      <div class="totali-item"><div class="t-label">Media imponibile</div><div class="t-value">${fmt(totInc/n)}</div></div>
+      <hr class="totali-divider">
+      <div class="totali-item"><div class="t-label">Margine totale</div><div class="t-value grn">${fmt(totMarg)}</div></div>
+      <div class="totali-item"><div class="t-label">Media margine</div><div class="t-value grn">${fmt(totMarg/n)}</div></div>
+      <div class="totali-item"><div class="t-label">Marg. eff. totale</div><div class="t-value ${totMargEff>=0?'grn':'red'}">${fmt(totMargEff)}</div></div>
+      <div class="totali-item"><div class="t-label">Media marg. eff.</div><div class="t-value ${(totMargEff/n)>=0?'grn':'red'}">${fmt(totMargEff/n)}</div></div>
+      <hr class="totali-divider">
+      <div class="totali-item"><div class="t-label">Margine % medio</div><div class="t-value grn">${margPercMedia.toFixed(1)}%</div></div>
+      <div class="totali-footer">su ${n} chiusure</div>
     `;
   } else {
     totaliBar.style.display = 'none';
@@ -959,18 +980,22 @@ function renderGiorniListAnalisi() {
     const totLordo = totInc * 1.10;
     const totMarg = riferimento.reduce((s,c)=>s+(c.totMargine||0),0);
     const totMargEff = riferimento.reduce((s,c)=>s+(c.margEff||0),0);
+    const margPercMedia = totInc > 0 ? (totMarg / totInc * 100) : 0;
     const label = selectedIds.size > 0 ? `${n} selezionati` : `${n} totali`;
-    totaliBar.style.display = 'flex';
+    totaliBar.style.display = 'grid';
     totaliBar.innerHTML = `
-      <div class="totali-item">Lordo <span class="acc">${fmt(totLordo)}</span></div>
-      <div class="totali-item">Media lordo <span>${fmt(totLordo/n)}</span></div>
-      <div class="totali-item">Imponibile <span class="acc">${fmt(totInc)}</span></div>
-      <div class="totali-item">Media impon. <span>${fmt(totInc/n)}</span></div>
-      <div class="totali-item">Margine <span class="grn">${fmt(totMarg)}</span></div>
-      <div class="totali-item">Media marg. <span class="grn">${fmt(totMarg/n)}</span></div>
-      <div class="totali-item">Marg. eff. <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
-      <div class="totali-item">Media m.eff. <span class="${(totMargEff/n)>=0?'grn':'negativo'}">${fmt(totMargEff/n)}</span></div>
-      <div class="totali-item" style="color:var(--text3)">${label}</div>
+      <div class="totali-item"><div class="t-label">Lordo totale</div><div class="t-value acc">${fmt(totLordo)}</div></div>
+      <div class="totali-item"><div class="t-label">Media lordo</div><div class="t-value">${fmt(totLordo/n)}</div></div>
+      <div class="totali-item"><div class="t-label">Imponibile totale</div><div class="t-value acc">${fmt(totInc)}</div></div>
+      <div class="totali-item"><div class="t-label">Media imponibile</div><div class="t-value">${fmt(totInc/n)}</div></div>
+      <hr class="totali-divider">
+      <div class="totali-item"><div class="t-label">Margine totale</div><div class="t-value grn">${fmt(totMarg)}</div></div>
+      <div class="totali-item"><div class="t-label">Media margine</div><div class="t-value grn">${fmt(totMarg/n)}</div></div>
+      <div class="totali-item"><div class="t-label">Marg. eff. totale</div><div class="t-value ${totMargEff>=0?'grn':'red'}">${fmt(totMargEff)}</div></div>
+      <div class="totali-item"><div class="t-label">Media marg. eff.</div><div class="t-value ${(totMargEff/n)>=0?'grn':'red'}">${fmt(totMargEff/n)}</div></div>
+      <hr class="totali-divider">
+      <div class="totali-item"><div class="t-label">Margine % medio</div><div class="t-value grn">${margPercMedia.toFixed(1)}%</div></div>
+      <div class="totali-footer">${label}</div>
     `;
   } else {
     totaliBar.style.display = 'none';
@@ -1222,6 +1247,7 @@ function buildUI() {
   const totImponibile=d.chiusura.reduce((s,r)=>s+r.imponibile,0);
   const totLordo=totImponibile*1.10;
   const totMargine=d.chiusura.reduce((s,r)=>s+r.margineEuro,0);
+  const marginePerc=totImponibile>0?(totMargine/totImponibile*100):0;
   const costiGiorno=d.costiGiorn||0;
   const percMargine=totImponibile>0?totMargine/totImponibile:0;
   const bep=percMargine>0?totImponibile+(costiGiorno-totMargine)/percMargine:0;
@@ -1229,6 +1255,7 @@ function buildUI() {
   document.getElementById('s-lordo').textContent=fmt(totLordo);
   document.getElementById('s-incasso').textContent=fmt(totImponibile);
   document.getElementById('s-margine').textContent=fmt(totMargine);
+  document.getElementById('s-margine-perc').textContent=marginePerc.toFixed(1)+'%';
   document.getElementById('s-bep').textContent=costiGiorno>0?fmt(bep):'N/D';
   document.getElementById('s-costi-fissi').textContent=costiGiorno>0?fmt(costiGiorno):'N/D';
   const el=document.getElementById('s-marg-eff');
