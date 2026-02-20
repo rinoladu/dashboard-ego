@@ -59,12 +59,13 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 }
 .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
 .btn-sm.logout:hover { border-color: var(--red); color: var(--red); }
-@media(max-width: 500px) {
+@media(max-width: 600px) {
   .app-logo { font-size: 1.4rem; }
-  .home-header { padding: 0.8rem; }
-  .btn-sm .btn-label { display: none; }
-  .btn-sm { padding: 0.4rem 0.5rem; }
-  .sync-label { display: none; }
+  .home-header { padding: 0.7rem 0.8rem; }
+  .home-actions { gap: 0.3rem; }
+  .btn-sm .btn-label { display: none !important; }
+  .btn-sm { padding: 0.35rem 0.45rem; font-size: 1rem; }
+  .sync-label { display: none !important; }
   .sync-dot { margin-right: 0; }
 }
 
