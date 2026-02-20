@@ -26,21 +26,50 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
+/* ===== LOGIN SCREEN ===== */
+#login-screen {
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100vh; gap: 2rem; padding: 2rem;
+}
+.login-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 4rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; }
+.login-subtitle { color: var(--text3); font-size: 0.9rem; letter-spacing: 0.1em; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; margin-top: -1.5rem; }
+.btn-google {
+  display: flex; align-items: center; gap: 0.8rem;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 0.9rem 1.8rem; border-radius: 12px; font-size: 0.95rem; cursor: pointer;
+  font-family: 'Barlow', sans-serif; font-weight: 500; transition: all 0.2s;
+}
+.btn-google:hover { border-color: var(--accent); color: var(--accent); }
+.btn-google svg { width: 20px; height: 20px; }
+.login-note { color: var(--text3); font-size: 0.75rem; text-align: center; max-width: 280px; }
+
 /* ===== HOME SCREEN ===== */
-#home-screen { display: flex; flex-direction: column; min-height: 100vh; }
+#home-screen { display: none; flex-direction: column; min-height: 100vh; }
 .home-header {
   background: var(--surface); border-bottom: 1px solid var(--border);
   padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100;
 }
 .app-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; }
-.home-actions { display: flex; gap: 0.5rem; }
+.home-actions { display: flex; gap: 0.5rem; align-items: center; }
 .btn-sm {
   background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
   padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
   font-family: 'Barlow', sans-serif; transition: all 0.2s; white-space: nowrap;
 }
 .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm.logout:hover { border-color: var(--red); color: var(--red); }
+
+/* Sync indicator */
+.sync-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--text3);
+  display: inline-block; margin-right: 0.3rem; transition: background 0.3s;
+}
+.sync-dot.synced { background: var(--green); }
+.sync-dot.syncing { background: var(--accent); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sync-label { font-size: 0.7rem; color: var(--text3); }
 
 /* TABS */
 .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 1rem; }
@@ -204,30 +233,40 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   .modal { max-width: 600px; margin: auto; border-radius: 20px; }
   .modal-overlay { align-items: center; }
 }
-.hidden {
-  display: none !important;
-}  
-.positivo {
-  color: #16a34a;
-  font-weight: bold;
-}
-
-.negativo {
-  color: #dc2626;
-  font-weight: bold;
-}
-
+.hidden { display: none !important; }
+.positivo { color: #16a34a; font-weight: bold; }
+.negativo { color: #dc2626; font-weight: bold; }
 </style>
 </head>
 <body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+  <div class="login-logo">EGO</div>
+  <div class="login-subtitle">Dashboard</div>
+  <button class="btn-google" onclick="loginGoogle()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+    </svg>
+    Accedi con Google
+  </button>
+  <div class="login-note">Solo il tuo account Google avrà accesso ai dati</div>
+</div>
+
 <!-- ===== HOME SCREEN ===== -->
 <div id="home-screen">
   <div class="home-header">
     <div class="app-logo">EGO</div>
     <div class="home-actions">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span class="sync-label" id="sync-label">—</span>
       <button class="btn-sm" onclick="exportData()">📤 Esporta</button>
       <button class="btn-sm" onclick="document.getElementById('import-input').click()">📥 Importa</button>
       <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn-sm logout" onclick="logoutUtente()" title="Esci">👤 Esci</button>
     </div>
   </div>
 
@@ -246,40 +285,17 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
         <option value="mensile">Mensile</option>
       </select>
     </div>
-    <!-- SELEZIONE MESE (visibile solo se mensile) -->
-<div id="mese-container" style="margin-bottom:1rem; display:none;">
-  <label style="color:#aaa; font-size:0.9rem;">
-    <strong>Mese di riferimento</strong>
-  </label>
-  <br>
-  <select id="mese-select"
-    style="
-      appearance:none;
-      background:#181818;
-      color:white;
-      border:1px solid #2c2c2c;
-      border-radius:8px;
-      padding:0.6rem;
-      margin-top:0.3rem;
-      width:100%;
-      max-width:250px;
-      font-size:0.95rem;
-    ">
-    <option value="gennaio">Gennaio</option>
-    <option value="febbraio">Febbraio</option>
-    <option value="marzo">Marzo</option>
-    <option value="aprile">Aprile</option>
-    <option value="maggio">Maggio</option>
-    <option value="giugno">Giugno</option>
-    <option value="luglio">Luglio</option>
-    <option value="agosto">Agosto</option>
-    <option value="settembre">Settembre</option>
-    <option value="ottobre">Ottobre</option>
-    <option value="novembre">Novembre</option>
-    <option value="dicembre">Dicembre</option>
-  </select>
-</div>
-    
+    <div id="mese-container" style="margin-bottom:1rem; display:none; padding: 0 1rem;">
+      <label style="color:#aaa; font-size:0.9rem;"><strong>Mese di riferimento</strong></label><br>
+      <select id="mese-select" style="appearance:none;background:#181818;color:white;border:1px solid #2c2c2c;border-radius:8px;padding:0.6rem;margin-top:0.3rem;width:100%;max-width:250px;font-size:0.95rem;">
+        <option value="gennaio">Gennaio</option><option value="febbraio">Febbraio</option>
+        <option value="marzo">Marzo</option><option value="aprile">Aprile</option>
+        <option value="maggio">Maggio</option><option value="giugno">Giugno</option>
+        <option value="luglio">Luglio</option><option value="agosto">Agosto</option>
+        <option value="settembre">Settembre</option><option value="ottobre">Ottobre</option>
+        <option value="novembre">Novembre</option><option value="dicembre">Dicembre</option>
+      </select>
+    </div>
     <div class="add-day-zone" onclick="document.getElementById('file-input').click()">
       <span style="font-size:2rem;display:block;margin-bottom:0.5rem">📊</span>
       <h3>Aggiungi chiusura</h3>
@@ -324,35 +340,14 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     </div>
     <button class="btn-sm" onclick="tornaHome()">← Home</button>
   </div>
-
   <div class="summary-grid">
-    <div class="card full">
-      <div class="card-label">Incasso imponibile</div>
-      <div class="card-value accent" id="s-incasso">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Margine chiusura</div>
-      <div class="card-value green" id="s-margine">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Break Even</div>
-      <div class="card-value blue" id="s-bep">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Costi fissi/giorno</div>
-      <div class="card-value" id="s-costi-fissi">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Marg. effettivo</div>
-      <div class="card-value" id="s-marg-eff">—</div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="s-progress" style="width:0%"></div></div>
-    </div>
-    <div class="card full">
-      <div class="card-label">Top 5 categorie per quantità</div>
-      <div id="top5-bars" style="margin-top:0.5rem"></div>
-    </div>
+    <div class="card full"><div class="card-label">Incasso imponibile</div><div class="card-value accent" id="s-incasso">—</div></div>
+    <div class="card"><div class="card-label">Margine chiusura</div><div class="card-value green" id="s-margine">—</div></div>
+    <div class="card"><div class="card-label">Break Even</div><div class="card-value blue" id="s-bep">—</div></div>
+    <div class="card"><div class="card-label">Costi fissi/giorno</div><div class="card-value" id="s-costi-fissi">—</div></div>
+    <div class="card"><div class="card-label">Marg. effettivo</div><div class="card-value" id="s-marg-eff">—</div><div class="progress-bar-wrap"><div class="progress-bar-fill" id="s-progress" style="width:0%"></div></div></div>
+    <div class="card full"><div class="card-label">Top 5 categorie per quantità</div><div id="top5-bars" style="margin-top:0.5rem"></div></div>
   </div>
-
   <div class="section-title">Analisi per categoria</div>
   <div class="btn-grid">
     <button class="btn-stat blue full" onclick="openModal('cat-vendute')">🏆 Cat. più vendute</button>
@@ -432,11 +427,134 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   </div>
 </div>
 
-<script>
+<!-- ===== FIREBASE ===== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAGPH0GXWA2gY_nFhJ0m3rqjfNWZ9FAP8k",
+  authDomain: "ego-dashboard-993e4.firebaseapp.com",
+  projectId: "ego-dashboard-993e4",
+  storageBucket: "ego-dashboard-993e4.firebasestorage.app",
+  messagingSenderId: "562196316820",
+  appId: "1:562196316820:web:a5a466f922af91abd32a81"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let unsubscribeSnapshot = null;
+
+// ===== AUTH =====
+window.loginGoogle = async () => {
+  try {
+    setSyncStatus('syncing', 'Accesso...');
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    setSyncStatus('error', 'Errore login');
+    alert('Errore accesso: ' + e.message);
+  }
+};
+
+window.logoutUtente = async () => {
+  if (!confirm('Vuoi uscire?')) return;
+  if (unsubscribeSnapshot) unsubscribeSnapshot();
+  await signOut(auth);
+  CHIUSURE = [];
+  currentUser = null;
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+};
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'flex';
+    document.getElementById('loading-msg').textContent = 'Caricamento dati...';
+    setSyncStatus('syncing', 'Sincronizzazione...');
+    subscribeToData();
+  } else {
+    currentUser = null;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+});
+
+// ===== FIRESTORE SYNC =====
+function subscribeToData() {
+  if (unsubscribeSnapshot) unsubscribeSnapshot();
+  const col = collection(db, 'users', currentUser.uid, 'chiusure');
+  const q = query(col, orderBy('data', 'desc'));
+  unsubscribeSnapshot = onSnapshot(q, snap => {
+    CHIUSURE = snap.docs.map(d => d.data());
+    CHIUSURE.sort((a, b) => b.data.localeCompare(a.data));
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('home-screen').style.display = 'flex';
+    setSyncStatus('synced', 'Sincronizzato');
+    renderGiorniList();
+    if (document.getElementById('panel-analisi').style.display !== 'none') {
+      renderGiorniListAnalisi();
+    }
+  }, err => {
+    setSyncStatus('error', 'Errore sync');
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('home-screen').style.display = 'flex';
+    console.error(err);
+  });
+}
+
+// Esponi funzioni save/delete al resto del codice
+window._saveChiusura = async (chiusura) => {
+  if (!currentUser) return;
+  setSyncStatus('syncing', 'Salvataggio...');
+  try {
+    const ref = doc(db, 'users', currentUser.uid, 'chiusure', chiusura.id);
+    await setDoc(ref, chiusura);
+    setSyncStatus('synced', 'Sincronizzato');
+  } catch(e) {
+    setSyncStatus('error', 'Errore salvataggio');
+    console.error(e);
+    throw e;
+  }
+};
+
+window._deleteChiusura = async (id) => {
+  if (!currentUser) return;
+  setSyncStatus('syncing', 'Eliminazione...');
+  try {
+    const ref = doc(db, 'users', currentUser.uid, 'chiusure', id);
+    await deleteDoc(ref);
+    setSyncStatus('synced', 'Sincronizzato');
+  } catch(e) {
+    setSyncStatus('error', 'Errore eliminazione');
+    console.error(e);
+    throw e;
+  }
+};
+
+function setSyncStatus(status, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + status;
+  lbl.textContent = label;
+}
+
+// Avvio: mostra login
+document.getElementById('login-screen').style.display = 'flex';
+</script>
+
+<script>
 // ===== COSTANTI =====
 const CATEGORIE_ESCLUSE = ['SERVIZIO', '--CLIENTE--'];
-const STORAGE_KEY = 'ego_chiusure_v1';
 
 // ===== STATO =====
 let CHIUSURE = [];
@@ -446,32 +564,16 @@ let selectedIds = new Set();
 
 // ===== INIT =====
 window.addEventListener('load', () => {
-  document.getElementById('home-screen').style.display = 'flex';
-  loadFromStorage();
-  renderGiorniList();
   const tipoSelect = document.getElementById('periodo-select');
   const meseContainer = document.getElementById('mese-container');
-
-// Mostra il mese solo se selezioni "Mensile"
-tipoSelect.addEventListener('change', () => {
-  if (tipoSelect.value === 'mensile') {
-    meseContainer.style.display = 'block';
-  } else {
-    meseContainer.style.display = 'none';
-  }
-});
-
+  tipoSelect.addEventListener('change', () => {
+    meseContainer.style.display = tipoSelect.value === 'mensile' ? 'block' : 'none';
+  });
   document.getElementById('file-input').addEventListener('change', e => {
     if (e.target.files[0]) {
       const periodo = document.getElementById('periodo-select').value;
-let mese = null;
-
-if (periodo === 'mensile') {
-  mese = document.getElementById('mese-select').value;
-}
-
-processFile(e.target.files[0], periodo, mese);
-
+      const mese = periodo === 'mensile' ? document.getElementById('mese-select').value : null;
+      processFile(e.target.files[0], periodo, mese);
     }
     e.target.value = '';
   });
@@ -482,31 +584,13 @@ processFile(e.target.files[0], periodo, mese);
     e.preventDefault(); dz.style.borderColor = '';
     if (e.dataTransfer.files[0]) {
       const periodo = document.getElementById('periodo-select').value;
-let mese = null;
-
-if (periodo === 'mensile') {
-  mese = document.getElementById('mese-select').value;
-}
-
-processFile(e.dataTransfer.files[0], periodo, mese);
-
+      const mese = periodo === 'mensile' ? document.getElementById('mese-select').value : null;
+      processFile(e.dataTransfer.files[0], periodo, mese);
     }
   });
 });
 
-// ===== STORAGE =====
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) CHIUSURE = JSON.parse(raw);
-  } catch(e) { CHIUSURE = []; }
-}
-
-function saveToStorage() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(CHIUSURE)); } catch(e) {}
-}
-
-// ===== EXPORT / IMPORT =====
+// ===== EXPORT / IMPORT (manteniamo per backup locale) =====
 function exportData() {
   if (!CHIUSURE.length) { alert('Nessun dato da esportare'); return; }
   const blob = new Blob([JSON.stringify(CHIUSURE, null, 2)], { type: 'application/json' });
@@ -522,18 +606,18 @@ function importData(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = ev => {
+  reader.onload = async ev => {
     try {
       const data = JSON.parse(ev.target.result);
       if (!Array.isArray(data)) throw new Error('Formato non valido');
       const existingIds = new Set(CHIUSURE.map(c => c.id));
       let added = 0;
-      data.forEach(d => {
-        if (!existingIds.has(d.id)) { CHIUSURE.push(d); added++; }
-      });
-      CHIUSURE.sort((a,b) => b.data.localeCompare(a.data));
-      saveToStorage();
-      renderGiorniList();
+      for (const d of data) {
+        if (!existingIds.has(d.id)) {
+          await window._saveChiusura(d);
+          added++;
+        }
+      }
       alert(`Importati ${added} giorni. ${data.length - added} già presenti.`);
     } catch(err) {
       alert('Errore nel file: ' + err.message);
@@ -573,12 +657,7 @@ function renderGiorniList() {
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
-          <div class="giorno-stat">
-  Marg. Eff.
-  <span class="${(c.margEff || 0) >= 0 ? 'positivo' : 'negativo'}">
-    ${fmt(c.margEff || 0)}
-  </span>
-</div>
+          <div class="giorno-stat">Marg. Eff. <span class="${(c.margEff||0)>=0?'positivo':'negativo'}">${fmt(c.margEff||0)}</span></div>
         </div>
       </div>
       <div class="giorno-actions" onclick="event.stopPropagation()">
@@ -601,12 +680,7 @@ function renderGiorniListAnalisi() {
         <div class="giorno-meta">
           <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
-          <div class="giorno-stat">
-  Marg. Eff.
-  <span class="${(c.margEff || 0) >= 0 ? 'positivo' : 'negativo'}">
-    ${fmt(c.margEff || 0)}
-  </span>
-</div>
+          <div class="giorno-stat">Marg. Eff. <span class="${(c.margEff||0)>=0?'positivo':'negativo'}">${fmt(c.margEff||0)}</span></div>
         </div>
       </div>
       <div style="font-size:1.2rem">${selectedIds.has(c.id) ? '✓' : ''}</div>
@@ -617,71 +691,53 @@ function renderGiorniListAnalisi() {
 
 // ===== SELEZIONE ANALISI =====
 function toggleSelezione(id) {
-  if (selectedIds.has(id)) selectedIds.delete(id);
-  else selectedIds.add(id);
+  if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
   renderGiorniListAnalisi();
 }
-
-function selectUltimi(n) {
-  selectedIds = new Set(CHIUSURE.slice(0, n).map(c => c.id));
-  renderGiorniListAnalisi();
-}
-
+function selectUltimi(n) { selectedIds = new Set(CHIUSURE.slice(0,n).map(c=>c.id)); renderGiorniListAnalisi(); }
 function selectSettimana() {
-  const now = new Date();
-  const dow = now.getDay();
-  const lunedi = new Date(now);
-  lunedi.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
-  lunedi.setHours(0,0,0,0);
-  selectedIds = new Set(CHIUSURE.filter(c => new Date(c.data) >= lunedi).map(c => c.id));
+  const now = new Date(); const dow = now.getDay();
+  const lunedi = new Date(now); lunedi.setDate(now.getDate()-(dow===0?6:dow-1)); lunedi.setHours(0,0,0,0);
+  selectedIds = new Set(CHIUSURE.filter(c=>new Date(c.data)>=lunedi).map(c=>c.id));
   renderGiorniListAnalisi();
 }
-
 function selectMese() {
-  const now = new Date();
-  const inizioMese = new Date(now.getFullYear(), now.getMonth(), 1);
-  selectedIds = new Set(CHIUSURE.filter(c => new Date(c.data) >= inizioMese).map(c => c.id));
+  const now = new Date(); const inizio = new Date(now.getFullYear(),now.getMonth(),1);
+  selectedIds = new Set(CHIUSURE.filter(c=>new Date(c.data)>=inizio).map(c=>c.id));
   renderGiorniListAnalisi();
 }
-
-function deselezionaTutti() {
-  selectedIds = new Set();
-  renderGiorniListAnalisi();
-}
-
+function deselezionaTutti() { selectedIds = new Set(); renderGiorniListAnalisi(); }
 function aggiornaSelezioneInfo() {
   const n = selectedIds.size;
-  document.getElementById('sel-info').textContent = n + (n === 1 ? ' giorno selezionato' : ' giorni selezionati');
-  document.getElementById('btn-analisi').disabled = n === 0;
+  document.getElementById('sel-info').textContent = n+(n===1?' giorno selezionato':' giorni selezionati');
+  document.getElementById('btn-analisi').disabled = n===0;
 }
 
 function apriAnalisi() {
   if (!selectedIds.size) return;
-  const giorni = CHIUSURE.filter(c => selectedIds.has(c.id));
+  const giorni = CHIUSURE.filter(c=>selectedIds.has(c.id));
   const n = giorni.length;
-  const merged = {
-    chiusura: giorni.flatMap(g => g.chiusura),
-    foodDrinkCost: giorni[0].foodDrinkCost,
-    costiGiorn: giorni[0].costiGiorn * n,
-  };
-  const tipo = n === 1 ? 'giorno' : n <= 7 ? 'settimana' : 'mese';
-  const label = n === 1 ? formatDate(giorni[0].data) :
-    `${formatDate(giorni[n-1].data)} → ${formatDate(giorni[0].data)} (${n} giorni)`;
+  const merged = { chiusura: giorni.flatMap(g=>g.chiusura), foodDrinkCost: giorni[0].foodDrinkCost, costiGiorn: giorni[0].costiGiorn*n };
+  const tipo = n===1?'giorno':n<=7?'settimana':'mese';
+  const label = n===1?formatDate(giorni[0].data):`${formatDate(giorni[n-1].data)} → ${formatDate(giorni[0].data)} (${n} giorni)`;
   apriDashboard(merged, label, tipo);
 }
 
 // ===== GIORNO SINGOLO =====
 function apriGiorno(id) {
-  const c = CHIUSURE.find(x => x.id === id);
+  const c = CHIUSURE.find(x=>x.id===id);
   if (!c) return;
-  apriDashboard(c, formatDate(c.data), c.tipo || 'giorno');
+  apriDashboard(c, formatDate(c.data), c.tipo||'giorno');
 }
 
-function eliminaGiorno(id) {
+async function eliminaGiorno(id) {
   if (!confirm('Eliminare questa chiusura?')) return;
-  CHIUSURE = CHIUSURE.filter(c => c.id !== id);
-  saveToStorage();
-  renderGiorniList();
+  try {
+    await window._deleteChiusura(id);
+    // Firestore onSnapshot aggiornerà automaticamente CHIUSURE e la lista
+  } catch(e) {
+    alert('Errore eliminazione: ' + e.message);
+  }
 }
 
 // ===== APRI DASHBOARD =====
@@ -690,10 +746,10 @@ function apriDashboard(data, label, tipo) {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('dashboard-screen').style.display = 'block';
   document.getElementById('dash-title').textContent = label;
-  const tipoLabels = { giorno: 'Chiusura giornaliera', settimana: 'Analisi settimanale', mese: 'Analisi mensile' };
-  document.getElementById('dash-subtitle').textContent = tipoLabels[tipo] || '';
+  const tipoLabels = { giorno:'Chiusura giornaliera', settimana:'Analisi settimanale', mese:'Analisi mensile' };
+  document.getElementById('dash-subtitle').textContent = tipoLabels[tipo]||'';
   buildUI();
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
 function tornaHome() {
@@ -708,29 +764,24 @@ function processFile(file, periodo, mese) {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('loading-screen').style.display = 'flex';
   document.getElementById('loading-msg').textContent = `Elaborazione ${file.name}...`;
-
   const reader = new FileReader();
-  reader.onload = e => {
-   console.log("PROCESS FILE PARTITO");
+  reader.onload = async e => {
     try {
       const wb = XLSX.read(e.target.result, { type: 'array' });
       const dati = parseWorkbook(wb, file.name, periodo, mese);
-      const esistente = CHIUSURE.find(c => c.id === dati.id);
+      const esistente = CHIUSURE.find(c=>c.id===dati.id);
       if (esistente) {
         if (!confirm(`La chiusura del ${formatDate(dati.data)} esiste già. Sovrascrivere?`)) {
           document.getElementById('loading-screen').style.display = 'none';
           document.getElementById('home-screen').style.display = 'flex';
           return;
         }
-        CHIUSURE = CHIUSURE.filter(c => c.id !== dati.id);
       }
-      CHIUSURE.unshift(dati);
-      CHIUSURE.sort((a,b) => b.data.localeCompare(a.data));
-      saveToStorage();
-      renderGiorniList();
+      await window._saveChiusura(dati);
       document.getElementById('loading-screen').style.display = 'none';
       document.getElementById('home-screen').style.display = 'flex';
-      apriGiorno(dati.id);
+      // Firestore aggiornerà la lista, apriamo la dashboard
+      apriDashboard(dati, formatDate(dati.data), dati.tipo||'giorno');
     } catch(err) {
       alert('Errore nel leggere il file: ' + err.message);
       document.getElementById('loading-screen').style.display = 'none';
@@ -740,399 +791,206 @@ function processFile(file, periodo, mese) {
   reader.readAsArrayBuffer(file);
 }
 
-  // ===== PARSING =====
-function parseWorkbook(wb, filename, periodo, mese = null) {
-
+// ===== PARSING =====
+function parseWorkbook(wb, filename, periodo, mese=null) {
   const result = {
-    id: '',
-    data: '',
-    tipo: periodo === 'settimanale' ? 'settimana' : periodo === 'mensile' ? 'mese' : 'giorno',
-    filename: filename || '',
-    chiusura: [],
-    foodDrinkCost: {},
-    costiGiorn: 0,
-    totImponibile: 0,
-    totMargine: 0,
+    id:'', data:'', tipo: periodo==='settimanale'?'settimana':periodo==='mensile'?'mese':'giorno',
+    filename: filename||'', chiusura:[], foodDrinkCost:{}, costiGiorn:0, totImponibile:0, totMargine:0,
   };
-
-  // ===== TITOLAZIONE =====
-
-if (periodo === 'mensile') {
-
-  const match = filename.match(/(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/i);
-
-  if (match) {
-    const meseNome = match[1].toLowerCase();
-    const anno = match[2];
-
-    result.titolo = meseNome.charAt(0).toUpperCase() + meseNome.slice(1) + ' ' + anno;
-
-    const mesiIndex = {
-      gennaio: 0, febbraio: 1, marzo: 2, aprile: 3,
-      maggio: 4, giugno: 5, luglio: 6, agosto: 7,
-      settembre: 8, ottobre: 9, novembre: 10, dicembre: 11
-    };
-
-    const dataObj = new Date(anno, mesiIndex[meseNome], 1);
-    result.data = dataObj.toISOString().split('T')[0];
-  }
-
-} else {
-
-  // GIORNALIERA / SETTIMANALE
-  const match = filename.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})/);
-
-  if (match) {
-    let giorno = match[1].padStart(2, '0');
-    let meseFile = match[2].padStart(2, '0');
-    let annoFile = match[3];
-
-    if (annoFile.length === 2) {
-      annoFile = '20' + annoFile;
+  if (periodo === 'mensile') {
+    const match = filename.match(/(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})/i);
+    if (match) {
+      const meseNome = match[1].toLowerCase();
+      const anno = match[2];
+      result.titolo = meseNome.charAt(0).toUpperCase()+meseNome.slice(1)+' '+anno;
+      const mesiIndex = {gennaio:0,febbraio:1,marzo:2,aprile:3,maggio:4,giugno:5,luglio:6,agosto:7,settembre:8,ottobre:9,novembre:10,dicembre:11};
+      result.data = new Date(anno, mesiIndex[meseNome], 1).toISOString().split('T')[0];
     }
-
-    result.data = `${annoFile}-${meseFile}-${giorno}`;
-    result.titolo = `${giorno}-${meseFile}-${annoFile}`;
   } else {
-    throw new Error("Data non trovata nel nome file");
+    const match = filename.match(/(\d{1,2})-(\d{1,2})-(\d{2,4})/);
+    if (match) {
+      let g=match[1].padStart(2,'0'), m=match[2].padStart(2,'0'), a=match[3];
+      if (a.length===2) a='20'+a;
+      result.data=`${a}-${m}-${g}`; result.titolo=`${g}-${m}-${a}`;
+    } else throw new Error("Data non trovata nel nome file");
   }
-
-}
-
-  // CHIUSURA
   if (wb.Sheets['CHIUSURA']) {
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets['CHIUSURA'], { header: 1 });
-    const headers = rows[0];
-    const idx = {
-      prodotto: headers.indexOf('PRODOTTO'),
-      cod: headers.indexOf('COD. PROD.'),
-      cat: headers.indexOf('CATEGORIA'),
-      qty: headers.indexOf("QUANTITA'"),
-      totale: headers.indexOf('TOTALE'),
-    };
-    for (let i = 1; i < rows.length; i++) {
-      const r = rows[i];
-      if (!r[idx.prodotto]) continue;
-      result.chiusura.push({
-        prodotto: String(r[idx.prodotto] || '').trim(),
-        cod: r[idx.cod],
-        cat: String(r[idx.cat] || '').trim(),
-        qty: parseFloat(r[idx.qty]) || 0,
-        totale: parseFloat(r[idx.totale]) || 0,
-      });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['CHIUSURA'],{header:1});
+    const h = rows[0];
+    const idx = { prodotto:h.indexOf('PRODOTTO'), cod:h.indexOf('COD. PROD.'), cat:h.indexOf('CATEGORIA'), qty:h.indexOf("QUANTITA'"), totale:h.indexOf('TOTALE') };
+    for (let i=1;i<rows.length;i++) {
+      const r=rows[i]; if(!r[idx.prodotto]) continue;
+      result.chiusura.push({ prodotto:String(r[idx.prodotto]||'').trim(), cod:r[idx.cod], cat:String(r[idx.cat]||'').trim(), qty:parseFloat(r[idx.qty])||0, totale:parseFloat(r[idx.totale])||0 });
     }
   }
-
-  // FOOD-DRINK COST
   if (wb.Sheets['FOOD-DRINK COST']) {
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets['FOOD-DRINK COST'], { header: 1 });
-    for (let i = 1; i < rows.length; i++) {
-      const r = rows[i];
-      const codRaw = r[2];
-      const costoUnit = parseFloat(r[4]) || 0;
-      if (codRaw != null) {
-        const codKey = String(Math.round(parseFloat(codRaw)));
-        if (codKey !== 'NaN') result.foodDrinkCost[codKey] = { costoUnit };
-      }
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['FOOD-DRINK COST'],{header:1});
+    for (let i=1;i<rows.length;i++) {
+      const r=rows[i]; const codRaw=r[2]; const costoUnit=parseFloat(r[4])||0;
+      if (codRaw!=null) { const k=String(Math.round(parseFloat(codRaw))); if(k!=='NaN') result.foodDrinkCost[k]={costoUnit}; }
     }
   }
-
-  // COSTI
   if (wb.Sheets['COSTI']) {
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets['COSTI'], { header: 1 });
-    for (let i = 0; i < rows.length; i++) {
-      const r = rows[i];
-      if (r[0] && String(r[0]).toLowerCase().includes('costi al gg')) {
-        result.costiGiorn = parseFloat(r[2]) || 0;
-        break;
-      }
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets['COSTI'],{header:1});
+    for (let i=0;i<rows.length;i++) {
+      const r=rows[i]; if(r[0]&&String(r[0]).toLowerCase().includes('costi al gg')) { result.costiGiorn=parseFloat(r[2])||0; break; }
     }
   }
-
-  // Adatta costi in base al periodo
-if (periodo === 'settimanale') result.costiGiorn *= 7;
-
-if (periodo === "mensile" && mese) {
-
-  const mesiIndex = {
-    gennaio: 0,
-    febbraio: 1,
-    marzo: 2,
-    aprile: 3,
-    maggio: 4,
-    giugno: 5,
-    luglio: 6,
-    agosto: 7,
-    settembre: 8,
-    ottobre: 9,
-    novembre: 10,
-    dicembre: 11
-  };
-
-  const anno = new Date().getFullYear();
-  const index = mesiIndex[mese];
-
-  if (index !== undefined) {
-    const giorniNelMese = new Date(anno, index + 1, 0).getDate();
-    result.costiGiorn = result.costiGiorn * giorniNelMese;
+  if (periodo==='settimanale') result.costiGiorn*=7;
+  if (periodo==='mensile'&&mese) {
+    const mesiIndex={gennaio:0,febbraio:1,marzo:2,aprile:3,maggio:4,giugno:5,luglio:6,agosto:7,settembre:8,ottobre:9,novembre:10,dicembre:11};
+    const idx=mesiIndex[mese];
+    if (idx!==undefined) result.costiGiorn*=new Date(new Date().getFullYear(),idx+1,0).getDate();
+    result.tipo='mese';
   }
-
-  result.tipo = "mese";
-}
-
-  // Calcola valori (IVA FISSA 10%)
   result.chiusura.forEach(item => {
-    const codKey = String(Math.round(parseFloat(item.cod)));
-    item.imponibile = item.totale / 1.10; // IVA FISSA 10%
-    const fdEntry = result.foodDrinkCost[codKey];
-    item.costoUnit = fdEntry ? fdEntry.costoUnit : 0;
-    item.costoTot = item.costoUnit * item.qty;
-    item.margineEuro = item.costoTot === 0 ? 0 : item.imponibile - item.costoTot;
-    item.marginePerc = item.imponibile > 0 ? (item.margineEuro / item.imponibile) * 100 : 0;
+    const k=String(Math.round(parseFloat(item.cod)));
+    item.imponibile=item.totale/1.10;
+    const fd=result.foodDrinkCost[k];
+    item.costoUnit=fd?fd.costoUnit:0;
+    item.costoTot=item.costoUnit*item.qty;
+    item.margineEuro=item.costoTot===0?0:item.imponibile-item.costoTot;
+    item.marginePerc=item.imponibile>0?(item.margineEuro/item.imponibile)*100:0;
   });
-
-  result.totImponibile = result.chiusura.reduce((s, r) => s + r.imponibile, 0);
-  result.totMargine = result.chiusura.reduce((s, r) => s + r.margineEuro, 0);
-  result.margEff = result.totMargine - result.costiGiorn;
-
-  const dateMatch = (result.filename || '').match(/(\d{1,2})[-_\/](\d{1,2})[-_\/](\d{2,4})/);
-  if (dateMatch) {
-    const [, d, m, y] = dateMatch;
-    const year = y.length === 2 ? '20' + y : y;
-    result.data = `${year}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-  }
-  result.id = result.data + '_' + result.filename.replace(/[^a-z0-9]/gi, '');
-
+  result.totImponibile=result.chiusura.reduce((s,r)=>s+r.imponibile,0);
+  result.totMargine=result.chiusura.reduce((s,r)=>s+r.margineEuro,0);
+  result.margEff=result.totMargine-result.costiGiorn;
+  const dm=(result.filename||'').match(/(\d{1,2})[-_\/](\d{1,2})[-_\/](\d{2,4})/);
+  if(dm){const[,d,m,y]=dm;const yr=y.length===2?'20'+y:y;result.data=`${yr}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;}
+  result.id=result.data+'_'+result.filename.replace(/[^a-z0-9]/gi,'');
   return result;
 }
 
 // ===== BUILD UI =====
 function buildUI() {
-  const d = CURRENT_DATA;
-  const totImponibile = d.chiusura.reduce((s, r) => s + r.imponibile, 0);
-  const totMargine = d.chiusura.reduce((s, r) => s + r.margineEuro, 0);
-  const costiGiorno = d.costiGiorn || 0;
-  const percMargine = totImponibile > 0 ? totMargine / totImponibile : 0;
-  const bep = percMargine > 0 ? totImponibile + (costiGiorno - totMargine) / percMargine : 0;
-  const margEff = totMargine - costiGiorno;
-
-  document.getElementById('s-incasso').textContent = fmt(totImponibile);
-  document.getElementById('s-margine').textContent = fmt(totMargine);
-  document.getElementById('s-bep').textContent = costiGiorno > 0 ? fmt(bep) : 'N/D';
-  document.getElementById('s-costi-fissi').textContent = costiGiorno > 0 ? fmt(costiGiorno) : 'N/D';
-
-  const el = document.getElementById('s-marg-eff');
-  el.textContent = fmt(margEff);
-  el.className = 'card-value ' + (margEff >= 0 ? 'green' : 'red');
-
-  if (bep > 0) {
-    const perc = Math.min(100, (totImponibile / bep) * 100);
-    document.getElementById('s-progress').style.width = perc + '%';
-    document.getElementById('s-progress').style.background = perc >= 100 ? 'var(--green)' : 'var(--accent)';
-  }
+  const d=CURRENT_DATA;
+  const totImponibile=d.chiusura.reduce((s,r)=>s+r.imponibile,0);
+  const totMargine=d.chiusura.reduce((s,r)=>s+r.margineEuro,0);
+  const costiGiorno=d.costiGiorn||0;
+  const percMargine=totImponibile>0?totMargine/totImponibile:0;
+  const bep=percMargine>0?totImponibile+(costiGiorno-totMargine)/percMargine:0;
+  const margEff=totMargine-costiGiorno;
+  document.getElementById('s-incasso').textContent=fmt(totImponibile);
+  document.getElementById('s-margine').textContent=fmt(totMargine);
+  document.getElementById('s-bep').textContent=costiGiorno>0?fmt(bep):'N/D';
+  document.getElementById('s-costi-fissi').textContent=costiGiorno>0?fmt(costiGiorno):'N/D';
+  const el=document.getElementById('s-marg-eff');
+  el.textContent=fmt(margEff); el.className='card-value '+(margEff>=0?'green':'red');
+  if(bep>0){const p=Math.min(100,(totImponibile/bep)*100);document.getElementById('s-progress').style.width=p+'%';document.getElementById('s-progress').style.background=p>=100?'var(--green)':'var(--accent)';}
   buildTop5Bars();
 }
 
 function buildTop5Bars() {
-  const bycat = {};
-  CURRENT_DATA.chiusura.filter(r => !CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r => {
-    if (!bycat[r.cat]) bycat[r.cat] = 0;
-    bycat[r.cat] += r.qty;
-  });
-  const sorted = Object.entries(bycat).sort((a,b) => b[1]-a[1]).slice(0,5);
-  const max = sorted[0]?.[1] || 1;
-  const colors = ['#e8b84b','#4b9de8','#3dd68c','#e84b7a','#a04be8'];
-  document.getElementById('top5-bars').innerHTML = sorted.map(([cat, qty], i) => {
-    const pct = (qty/max*100).toFixed(0);
-    const label = cat.replace(/--/g,'').trim();
-    return `<div class="mini-bar-row">
-      <div class="mini-bar-label">${label}</div>
-      <div class="mini-bar-track">
-        <div class="mini-bar-fill" style="width:${pct}%;background:${colors[i]};">${qty}</div>
-      </div>
-    </div>`;
+  const bycat={};
+  CURRENT_DATA.chiusura.filter(r=>!CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r=>{if(!bycat[r.cat])bycat[r.cat]=0;bycat[r.cat]+=r.qty;});
+  const sorted=Object.entries(bycat).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const max=sorted[0]?.[1]||1;
+  const colors=['#e8b84b','#4b9de8','#3dd68c','#e84b7a','#a04be8'];
+  document.getElementById('top5-bars').innerHTML=sorted.map(([cat,qty],i)=>{
+    const pct=(qty/max*100).toFixed(0);
+    return `<div class="mini-bar-row"><div class="mini-bar-label">${cat.replace(/--/g,'').trim()}</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${colors[i]};">${qty}</div></div></div>`;
   }).join('');
 }
 
 // ===== MODAL =====
 function openModal(type) {
   document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  if (activeChart) { activeChart.destroy(); activeChart = null; }
-  const config = getModalConfig(type);
-  document.getElementById('modal-title').textContent = config.title;
-  document.getElementById('modal-body').innerHTML = config.html;
-  if (config.chartData) renderChart(config.chartData, config.chartType || 'bar', config.colorScheme);
+  document.body.style.overflow='hidden';
+  if(activeChart){activeChart.destroy();activeChart=null;}
+  const config=getModalConfig(type);
+  document.getElementById('modal-title').textContent=config.title;
+  document.getElementById('modal-body').innerHTML=config.html;
+  if(config.chartData) renderChart(config.chartData,config.chartType||'bar',config.colorScheme);
 }
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  if (activeChart) { activeChart.destroy(); activeChart = null; }
-}
-
-function closeModalOutside(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeModal();
-}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';if(activeChart){activeChart.destroy();activeChart=null;}}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 
 // ===== DATA HELPERS =====
-function groupBy(field, sumField) {
-  const acc = {};
-  CURRENT_DATA.chiusura.filter(r => !CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r => {
-    const key = r[field] || 'N/D';
-    if (!acc[key]) acc[key] = 0;
-    acc[key] += r[sumField] || 0;
-  });
-  return Object.entries(acc).sort((a,b) => b[1]-a[1]);
+function groupBy(field,sumField){
+  const acc={};
+  CURRENT_DATA.chiusura.filter(r=>!CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r=>{const k=r[field]||'N/D';if(!acc[k])acc[k]=0;acc[k]+=r[sumField]||0;});
+  return Object.entries(acc).sort((a,b)=>b[1]-a[1]);
 }
-
-function groupByMargine(field) {
-  const acc = {};
-  CURRENT_DATA.chiusura.filter(r => !CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r => {
-    const key = r[field] || 'N/D';
-    if (!acc[key]) acc[key] = { margine: 0, incasso: 0 };
-    acc[key].margine += r.margineEuro || 0;
-    acc[key].incasso += r.imponibile || 0;
-  });
-  return Object.entries(acc).map(([k,v]) => [k, v.margine, v.incasso > 0 ? (v.margine/v.incasso*100) : 0]).sort((a,b) => b[1]-a[1]);
+function groupByMargine(field){
+  const acc={};
+  CURRENT_DATA.chiusura.filter(r=>!CATEGORIE_ESCLUSE.includes(r.cat)).forEach(r=>{const k=r[field]||'N/D';if(!acc[k])acc[k]={margine:0,incasso:0};acc[k].margine+=r.margineEuro||0;acc[k].incasso+=r.imponibile||0;});
+  return Object.entries(acc).map(([k,v])=>[k,v.margine,v.incasso>0?(v.margine/v.incasso*100):0]).sort((a,b)=>b[1]-a[1]);
 }
-
-function filterGroupBy(cats, groupField, sumField, limit) {
-  const acc = {};
-  CURRENT_DATA.chiusura.filter(r => cats.includes(r.cat)).forEach(r => {
-    const key = r[groupField] || 'N/D';
-    if (!acc[key]) acc[key] = 0;
-    acc[key] += r[sumField] || 0;
-  });
-  return Object.entries(acc).sort((a,b) => b[1]-a[1]).slice(0, limit);
+function filterGroupBy(cats,gf,sf,limit){
+  const acc={};
+  CURRENT_DATA.chiusura.filter(r=>cats.includes(r.cat)).forEach(r=>{const k=r[gf]||'N/D';if(!acc[k])acc[k]=0;acc[k]+=r[sf]||0;});
+  return Object.entries(acc).sort((a,b)=>b[1]-a[1]).slice(0,limit);
 }
-
-function filterGroupByMargine(cats, groupField, limit) {
-  const acc = {};
-  CURRENT_DATA.chiusura.filter(r => cats.includes(r.cat)).forEach(r => {
-    const key = r[groupField] || 'N/D';
-    if (!acc[key]) acc[key] = { margine: 0, incasso: 0 };
-    acc[key].margine += r.margineEuro || 0;
-    acc[key].incasso += r.imponibile || 0;
-  });
-  return Object.entries(acc).map(([k,v]) => [k, v.margine, v.incasso > 0 ? (v.margine/v.incasso*100) : 0]).sort((a,b) => b[1]-a[1]).slice(0, limit);
+function filterGroupByMargine(cats,gf,limit){
+  const acc={};
+  CURRENT_DATA.chiusura.filter(r=>cats.includes(r.cat)).forEach(r=>{const k=r[gf]||'N/D';if(!acc[k])acc[k]={margine:0,incasso:0};acc[k].margine+=r.margineEuro||0;acc[k].incasso+=r.imponibile||0;});
+  return Object.entries(acc).map(([k,v])=>[k,v.margine,v.incasso>0?(v.margine/v.incasso*100):0]).sort((a,b)=>b[1]-a[1]).slice(0,limit);
 }
 
 // ===== MODAL CONFIGS =====
-function getModalConfig(type) {
-  const N = 10;
-  const configs = {
-    'cat-vendute': () => buildBarConfig('🏆 Categorie per Quantità', groupBy('cat','qty'), 'qty', 'pezzi', 'blue'),
-    'cat-incasso': () => buildBarConfig('💶 Categorie per Incasso', groupBy('cat','totale'), 'totale', '€', 'gold'),
-    'cat-margine': () => buildMarginConfig('📈 Categorie per Margine', groupByMargine('cat')),
-    'drink-venduti': () => buildBarConfig('🍹 Drink più Venduti', filterGroupBy(['--APERITIVI--','--COCKTAIL--','--GIN--','--EGO DRINKS--','--GRAPPE--','--RUM--','--TEQUILA--','--WHISKEY--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'drink-margine': () => buildMarginConfig('💰 Drink per Margine', filterGroupByMargine(['--APERITIVI--','--COCKTAIL--','--GIN--','--EGO DRINKS--','--GRAPPE--','--RUM--','--TEQUILA--','--WHISKEY--'], 'prodotto', N)),
-    'pizze-vendute': () => buildBarConfig('🍕 Pizze più Vendute', filterGroupBy(['--PIZZE CLASSICHE--','--PIZZE CREATIVE--','--PIZZE DOLCI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'pizze-margine': () => buildMarginConfig('🍕 Pizze per Margine', filterGroupByMargine(['--PIZZE CLASSICHE--','--PIZZE CREATIVE--','--PIZZE DOLCI--'], 'prodotto', N)),
-    'primi-venduti': () => buildBarConfig('🍝 Primi più Venduti', filterGroupBy(['--PRIMI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'primi-margine': () => buildMarginConfig('🍝 Primi per Margine', filterGroupByMargine(['--PRIMI--'], 'prodotto', N)),
-    'secondi-venduti': () => buildBarConfig('🥩 Secondi più Venduti', filterGroupBy(['--SECONDI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'secondi-margine': () => buildMarginConfig('🥩 Secondi per Margine', filterGroupByMargine(['--SECONDI--'], 'prodotto', N)),
-    'burger-venduti': () => buildBarConfig('🍔 Burger più Venduti', filterGroupBy(['--BURGER MENU--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'burger-margine': () => buildMarginConfig('🍔 Burger per Margine', filterGroupByMargine(['--BURGER MENU--'], 'prodotto', N)),
-    'anti-venduti': () => buildBarConfig('🫒 Antipasti più Venduti', filterGroupBy(['--ANTIPASTI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'anti-margine': () => buildMarginConfig('🫒 Antipasti per Margine', filterGroupByMargine(['--ANTIPASTI--'], 'prodotto', N)),
-    'dolci-venduti': () => buildBarConfig('🍰 Dolci più Venduti', filterGroupBy(['--DOLCI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'dolci-margine': () => buildMarginConfig('🍰 Dolci per Margine', filterGroupByMargine(['--DOLCI--'], 'prodotto', N)),
-    'caffe-venduti': () => buildBarConfig('☕ Caffetteria più Venduta', filterGroupBy(['--CAFFETTERIA--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'caffe-margine': () => buildMarginConfig('☕ Caffetteria per Margine', filterGroupByMargine(['--CAFFETTERIA--'], 'prodotto', N)),
-    'vb-venduti': () => buildBarConfig('🥂 Vini Bianchi più Venduti', filterGroupBy(['--VINI BIANCHI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'vb-margine': () => buildMarginConfig('🥂 Vini Bianchi per Margine', filterGroupByMargine(['--VINI BIANCHI--'], 'prodotto', N)),
-    'vr-venduti': () => buildBarConfig('🍷 Vini Rossi/Rosati più Venduti', filterGroupBy(['--VINI ROSSI E ROSATI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'vr-margine': () => buildMarginConfig('🍷 Vini Rossi/Rosati per Margine', filterGroupByMargine(['--VINI ROSSI E ROSATI--'], 'prodotto', N)),
-    'spu-venduti': () => buildBarConfig('🍾 Spumanti più Venduti', filterGroupBy(['--SPUMANTI E PROSECCHI--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'spu-margine': () => buildMarginConfig('🍾 Spumanti per Margine', filterGroupByMargine(['--SPUMANTI E PROSECCHI--'], 'prodotto', N)),
-    'birre-vendute': () => buildBarConfig('🍺 Birre più Vendute', filterGroupBy(['--BIRRE--'], 'prodotto', 'qty', N), 'qty', 'pezzi', 'blue'),
-    'birre-margine': () => buildMarginConfig('🍺 Birre per Margine', filterGroupByMargine(['--BIRRE--'], 'prodotto', N)),
+function getModalConfig(type){
+  const N=10;
+  const configs={
+    'cat-vendute':()=>buildBarConfig('🏆 Categorie per Quantità',groupBy('cat','qty'),'qty','pezzi','blue'),
+    'cat-incasso':()=>buildBarConfig('💶 Categorie per Incasso',groupBy('cat','totale'),'totale','€','gold'),
+    'cat-margine':()=>buildMarginConfig('📈 Categorie per Margine',groupByMargine('cat')),
+    'drink-venduti':()=>buildBarConfig('🍹 Drink più Venduti',filterGroupBy(['--APERITIVI--','--COCKTAIL--','--GIN--','--EGO DRINKS--','--GRAPPE--','--RUM--','--TEQUILA--','--WHISKEY--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'drink-margine':()=>buildMarginConfig('💰 Drink per Margine',filterGroupByMargine(['--APERITIVI--','--COCKTAIL--','--GIN--','--EGO DRINKS--','--GRAPPE--','--RUM--','--TEQUILA--','--WHISKEY--'],'prodotto',N)),
+    'pizze-vendute':()=>buildBarConfig('🍕 Pizze più Vendute',filterGroupBy(['--PIZZE CLASSICHE--','--PIZZE CREATIVE--','--PIZZE DOLCI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'pizze-margine':()=>buildMarginConfig('🍕 Pizze per Margine',filterGroupByMargine(['--PIZZE CLASSICHE--','--PIZZE CREATIVE--','--PIZZE DOLCI--'],'prodotto',N)),
+    'primi-venduti':()=>buildBarConfig('🍝 Primi più Venduti',filterGroupBy(['--PRIMI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'primi-margine':()=>buildMarginConfig('🍝 Primi per Margine',filterGroupByMargine(['--PRIMI--'],'prodotto',N)),
+    'secondi-venduti':()=>buildBarConfig('🥩 Secondi più Venduti',filterGroupBy(['--SECONDI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'secondi-margine':()=>buildMarginConfig('🥩 Secondi per Margine',filterGroupByMargine(['--SECONDI--'],'prodotto',N)),
+    'burger-venduti':()=>buildBarConfig('🍔 Burger più Venduti',filterGroupBy(['--BURGER MENU--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'burger-margine':()=>buildMarginConfig('🍔 Burger per Margine',filterGroupByMargine(['--BURGER MENU--'],'prodotto',N)),
+    'anti-venduti':()=>buildBarConfig('🫒 Antipasti più Venduti',filterGroupBy(['--ANTIPASTI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'anti-margine':()=>buildMarginConfig('🫒 Antipasti per Margine',filterGroupByMargine(['--ANTIPASTI--'],'prodotto',N)),
+    'dolci-venduti':()=>buildBarConfig('🍰 Dolci più Venduti',filterGroupBy(['--DOLCI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'dolci-margine':()=>buildMarginConfig('🍰 Dolci per Margine',filterGroupByMargine(['--DOLCI--'],'prodotto',N)),
+    'caffe-venduti':()=>buildBarConfig('☕ Caffetteria più Venduta',filterGroupBy(['--CAFFETTERIA--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'caffe-margine':()=>buildMarginConfig('☕ Caffetteria per Margine',filterGroupByMargine(['--CAFFETTERIA--'],'prodotto',N)),
+    'vb-venduti':()=>buildBarConfig('🥂 Vini Bianchi più Venduti',filterGroupBy(['--VINI BIANCHI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'vb-margine':()=>buildMarginConfig('🥂 Vini Bianchi per Margine',filterGroupByMargine(['--VINI BIANCHI--'],'prodotto',N)),
+    'vr-venduti':()=>buildBarConfig('🍷 Vini Rossi/Rosati più Venduti',filterGroupBy(['--VINI ROSSI E ROSATI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'vr-margine':()=>buildMarginConfig('🍷 Vini Rossi/Rosati per Margine',filterGroupByMargine(['--VINI ROSSI E ROSATI--'],'prodotto',N)),
+    'spu-venduti':()=>buildBarConfig('🍾 Spumanti più Venduti',filterGroupBy(['--SPUMANTI E PROSECCHI--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'spu-margine':()=>buildMarginConfig('🍾 Spumanti per Margine',filterGroupByMargine(['--SPUMANTI E PROSECCHI--'],'prodotto',N)),
+    'birre-vendute':()=>buildBarConfig('🍺 Birre più Vendute',filterGroupBy(['--BIRRE--'],'prodotto','qty',N),'qty','pezzi','blue'),
+    'birre-margine':()=>buildMarginConfig('🍺 Birre per Margine',filterGroupByMargine(['--BIRRE--'],'prodotto',N)),
   };
-  const fn = configs[type];
-  if (!fn) return { title: 'N/D', html: '<div class="no-data">Dati non disponibili</div>' };
+  const fn=configs[type];
+  if(!fn) return{title:'N/D',html:'<div class="no-data">Dati non disponibili</div>'};
   return fn();
 }
 
-// ===== CHART BUILDERS =====
-function buildBarConfig(title, data, valField, unit, colorScheme) {
-  if (!data.length) return { title, html: '<div class="no-data">Nessun dato disponibile</div>' };
-  const labels = data.map(([k]) => k.replace(/--/g,'').trim());
-  const values = data.map(([,v]) => Math.round(v * 100) / 100);
-  const tableRows = data.map(([k,v], i) =>
-    `<tr><td><span class="badge ${i<3?'gold':'blue'}">${i+1}</span> ${k.replace(/--/g,'').trim()}</td>
-    <td class="num">${valField === 'totale' ? fmt(v) : v.toFixed(0) + ' ' + unit}</td></tr>`
-  ).join('');
-  return {
-    title, chartData: { labels, values }, chartType: 'bar', colorScheme,
-    html: `<div class="chart-container"><canvas id="main-chart"></canvas></div>
-    <table class="stat-table"><thead><tr><th>Prodotto / Categoria</th><th style="text-align:right">${unit==='€'?'Incasso':'Quantità'}</th></tr></thead><tbody>${tableRows}</tbody></table>`
-  };
+function buildBarConfig(title,data,valField,unit,colorScheme){
+  if(!data.length) return{title,html:'<div class="no-data">Nessun dato disponibile</div>'};
+  const labels=data.map(([k])=>k.replace(/--/g,'').trim());
+  const values=data.map(([,v])=>Math.round(v*100)/100);
+  const tableRows=data.map(([k,v],i)=>`<tr><td><span class="badge ${i<3?'gold':'blue'}">${i+1}</span> ${k.replace(/--/g,'').trim()}</td><td class="num">${valField==='totale'?fmt(v):v.toFixed(0)+' '+unit}</td></tr>`).join('');
+  return{title,chartData:{labels,values},chartType:'bar',colorScheme,html:`<div class="chart-container"><canvas id="main-chart"></canvas></div><table class="stat-table"><thead><tr><th>Prodotto / Categoria</th><th style="text-align:right">${unit==='€'?'Incasso':'Quantità'}</th></tr></thead><tbody>${tableRows}</tbody></table>`};
 }
 
-function buildMarginConfig(title, data) {
-  if (!data.length) return { title, html: '<div class="no-data">Nessun dato (costi mancanti)</div>' };
-  const labels = data.map(([k]) => k.replace(/--/g,'').trim());
-  const values = data.map(([,m]) => Math.round(m * 100) / 100);
-  const tableRows = data.map(([k,m,p], i) => {
-    const sign = m >= 0 ? '+' : '';
-    const col = m >= 0 ? 'color:var(--green)' : 'color:var(--red)';
-    return `<tr><td><span class="badge ${i<3?'gold':'blue'}">${i+1}</span> ${k.replace(/--/g,'').trim()}</td>
-    <td class="num" style="${col}">${sign}${fmt(m)}</td>
-    <td class="num" style="${col}">${sign}${p.toFixed(1)}%</td></tr>`;
-  }).join('');
-  return {
-    title, chartData: { labels, values }, chartType: 'margine', colorScheme: 'mixed',
-    html: `<div class="chart-container"><canvas id="main-chart"></canvas></div>
-    <table class="stat-table"><thead><tr><th>Prodotto</th><th style="text-align:right">Margine €</th><th style="text-align:right">%</th></tr></thead><tbody>${tableRows}</tbody></table>`
-  };
+function buildMarginConfig(title,data){
+  if(!data.length) return{title,html:'<div class="no-data">Nessun dato (costi mancanti)</div>'};
+  const labels=data.map(([k])=>k.replace(/--/g,'').trim());
+  const values=data.map(([,m])=>Math.round(m*100)/100);
+  const tableRows=data.map(([k,m,p],i)=>{const sign=m>=0?'+':'';const col=m>=0?'color:var(--green)':'color:var(--red)';return`<tr><td><span class="badge ${i<3?'gold':'blue'}">${i+1}</span> ${k.replace(/--/g,'').trim()}</td><td class="num" style="${col}">${sign}${fmt(m)}</td><td class="num" style="${col}">${sign}${p.toFixed(1)}%</td></tr>`;}).join('');
+  return{title,chartData:{labels,values},chartType:'margine',colorScheme:'mixed',html:`<div class="chart-container"><canvas id="main-chart"></canvas></div><table class="stat-table"><thead><tr><th>Prodotto</th><th style="text-align:right">Margine €</th><th style="text-align:right">%</th></tr></thead><tbody>${tableRows}</tbody></table>`};
 }
 
-// ===== RENDER CHART =====
-function renderChart(data, type, colorScheme) {
-  const canvas = document.getElementById('main-chart');
-  if (!canvas) return;
-  const colors = {
-    blue: { bg: 'rgba(75,157,232,0.7)', border: '#4b9de8' },
-    gold: { bg: 'rgba(232,184,75,0.7)', border: '#e8b84b' },
-  };
-  const opts = {
-    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: '#1a1d22', titleColor: '#e8b84b', bodyColor: '#f0f2f5',
-        borderColor: '#252930', borderWidth: 1,
-        callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) }
-      }
-    },
-    scales: {
-      x: { grid: { color: '#1e2227' }, ticks: { color: '#8a919e', font: { family: 'Barlow Condensed', size: 11 }, callback: v => Math.abs(v)>=1000?(v/1000).toFixed(1)+'k':v }, border: { color: '#252930' } },
-      y: { grid: { display: false }, ticks: { color: '#c0c8d4', font: { family: 'Barlow Condensed', size: 11 }, maxTicksLimit: 12 }, border: { color: '#252930' } }
-    }
-  };
-  if (type === 'margine') {
-    activeChart = new Chart(canvas, { type: 'bar', data: { labels: data.labels, datasets: [{ label: 'Margine €', data: data.values, backgroundColor: data.values.map(v => v>=0?'rgba(61,214,140,0.7)':'rgba(232,75,75,0.7)'), borderColor: data.values.map(v => v>=0?'#3dd68c':'#e84b4b'), borderWidth: 1, borderRadius: 6 }] }, options: opts });
-  } else {
-    const c = colors[colorScheme] || colors.blue;
-    activeChart = new Chart(canvas, { type: 'bar', data: { labels: data.labels, datasets: [{ label: 'Valore', data: data.values, backgroundColor: c.bg, borderColor: c.border, borderWidth: 1, borderRadius: 6 }] }, options: opts });
-  }
+function renderChart(data,type,colorScheme){
+  const canvas=document.getElementById('main-chart'); if(!canvas) return;
+  const colors={blue:{bg:'rgba(75,157,232,0.7)',border:'#4b9de8'},gold:{bg:'rgba(232,184,75,0.7)',border:'#e8b84b'}};
+  const opts={indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a1d22',titleColor:'#e8b84b',bodyColor:'#f0f2f5',borderColor:'#252930',borderWidth:1,callbacks:{label:ctx=>' '+fmt(ctx.parsed.x)}}},scales:{x:{grid:{color:'#1e2227'},ticks:{color:'#8a919e',font:{family:'Barlow Condensed',size:11},callback:v=>Math.abs(v)>=1000?(v/1000).toFixed(1)+'k':v},border:{color:'#252930'}},y:{grid:{display:false},ticks:{color:'#c0c8d4',font:{family:'Barlow Condensed',size:11},maxTicksLimit:12},border:{color:'#252930'}}}};
+  if(type==='margine'){activeChart=new Chart(canvas,{type:'bar',data:{labels:data.labels,datasets:[{label:'Margine €',data:data.values,backgroundColor:data.values.map(v=>v>=0?'rgba(61,214,140,0.7)':'rgba(232,75,75,0.7)'),borderColor:data.values.map(v=>v>=0?'#3dd68c':'#e84b4b'),borderWidth:1,borderRadius:6}]},options:opts});}
+  else{const c=colors[colorScheme]||colors.blue;activeChart=new Chart(canvas,{type:'bar',data:{labels:data.labels,datasets:[{label:'Valore',data:data.values,backgroundColor:c.bg,borderColor:c.border,borderWidth:1,borderRadius:6}]},options:opts});}
 }
 
 // ===== UTILS =====
-function fmt(n) {
-  if (n === null || n === undefined || isNaN(n)) return '—';
-  return new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(n);
-}
-
-function formatDate(d) {
-  if (!d) return 'Data sconosciuta';
-  try {
-    const dt = new Date(d + 'T00:00:00');
-    return dt.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  } catch { return d; }
-}
+function fmt(n){if(n===null||n===undefined||isNaN(n))return'—';return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(n);}
+function formatDate(d){if(!d)return'Data sconosciuta';try{const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}catch{return d;}}
 </script>
 </body>
 </html>
