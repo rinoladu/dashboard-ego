@@ -357,6 +357,56 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   letter-spacing: 0.08em; text-transform: uppercase; padding: 0.7rem;
   border-radius: 10px; border: none; cursor: pointer; margin-top: 1rem;
 }
+
+/* LOGIN FORM */
+.login-divider { display: flex; align-items: center; gap: 0.8rem; width: 100%; max-width: 300px; }
+.login-divider::before, .login-divider::after { content:''; flex:1; border-top: 1px solid var(--border); }
+.login-divider span { font-size: 0.72rem; color: var(--text3); white-space: nowrap; }
+.login-input {
+  width: 100%; max-width: 300px; background: var(--surface); border: 1px solid var(--border);
+  color: var(--text); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.9rem;
+  font-family: 'Barlow', sans-serif; outline: none; transition: border-color 0.2s;
+}
+.login-input:focus { border-color: var(--accent); }
+.login-input::placeholder { color: var(--text3); }
+.btn-login-email {
+  width: 100%; max-width: 300px; background: var(--accent); color: #000;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem;
+  border-radius: 10px; border: none; cursor: pointer; transition: opacity 0.2s;
+}
+.btn-login-email:hover { opacity: 0.85; }
+.login-error { color: var(--red); font-size: 0.78rem; text-align: center; min-height: 1rem; }
+/* Badge sola lettura */
+.readonly-badge {
+  background: #2a1e5f; color: #a04be8; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.2rem 0.6rem; border-radius: 4px; margin-left: 0.5rem;
+}
+
+/* ===== SELEZIONE LOCALE ===== */
+#locale-screen {
+  display: none; flex-direction: column; min-height: 100vh;
+}
+.locale-header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 1rem 1.2rem; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.locale-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; padding: 1.2rem;
+}
+.locale-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.5rem 1rem; cursor: pointer; transition: all 0.2s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+}
+.locale-card:hover { border-color: var(--accent); background: #1a1408; transform: translateY(-2px); }
+.locale-card.admin-only { border-color: var(--accent2); }
+.locale-icon { font-size: 2rem; }
+.locale-nome { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--text); letter-spacing: 0.05em; text-transform: uppercase; }
+.locale-badge { font-size: 0.65rem; color: var(--text3); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
+@media(min-width: 500px) { .locale-grid { grid-template-columns: repeat(3, 1fr); } }
 </style>
 </head>
 <body>
@@ -374,13 +424,36 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     </svg>
     Accedi con Google
   </button>
-  <div class="login-note">Solo il tuo account Google avrà accesso ai dati</div>
+  <div class="login-divider"><span>oppure accedi come titolare</span></div>
+  <input class="login-input" type="email" id="login-email" placeholder="Email" autocomplete="email">
+  <input class="login-input" type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+  <button class="btn-login-email" onclick="loginEmail()">Accedi</button>
+  <div class="login-error" id="login-error"></div>
+</div>
+
+<!-- ===== SELEZIONE LOCALE (solo admin) ===== -->
+<div id="locale-screen">
+  <div class="locale-header">
+    <div class="app-logo">EGO</div>
+    <div class="home-actions">
+      <button class="btn-sm btn-theme" onclick="toggleTheme()" id="btn-theme-locale" title="Cambia tema">🌙</button>
+      <button class="btn-sm logout" onclick="logoutUtente()">👤 <span class="btn-label">Esci</span></button>
+    </div>
+  </div>
+  <div style="padding:1.5rem 1.2rem 0.5rem">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3)">Seleziona locale</div>
+    <div style="font-size:0.85rem;color:var(--text2);margin-top:0.3rem">Scegli quale locale vuoi visualizzare</div>
+  </div>
+  <div class="locale-grid" id="locale-grid"></div>
 </div>
 
 <!-- ===== HOME SCREEN ===== -->
 <div id="home-screen">
   <div class="home-header">
-    <div class="app-logo">EGO</div>
+    <div style="display:flex;align-items:center;gap:0.5rem">
+      <div class="app-logo" id="home-logo">EGO</div>
+      <button class="btn-sm" id="btn-change-locale" onclick="cambiaLocale()" style="display:none;font-size:0.7rem">⇄ <span class="btn-label">Cambia</span></button>
+    </div>
     <div class="home-actions">
       <span class="sync-dot" id="sync-dot"></span>
       <span class="sync-label" id="sync-label">—</span>
@@ -591,9 +664,9 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 <!-- ===== FIREBASE ===== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged }
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, orderBy }
+import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot, query, orderBy }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -605,22 +678,42 @@ const firebaseConfig = {
   appId: "1:562196316820:web:a5a466f922af91abd32a81"
 };
 
+// IL TUO UID GOOGLE — verrà impostato automaticamente al primo login
+const ADMIN_UID_KEY = 'ego_admin_uid';
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 let currentUser = null;
+let currentProfilo = null; // null = admin, altrimenti { nome, localeUid }
 let unsubscribeSnapshot = null;
 
 // ===== AUTH =====
 window.loginGoogle = async () => {
   try {
     setSyncStatus('syncing', 'Accesso...');
+    document.getElementById('login-error').textContent = '';
     await signInWithPopup(auth, provider);
   } catch(e) {
     setSyncStatus('error', 'Errore login');
-    alert('Errore accesso: ' + e.message);
+    document.getElementById('login-error').textContent = 'Errore accesso Google';
+  }
+};
+
+window.loginEmail = async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  if (!email || !password) { errEl.textContent = 'Inserisci email e password'; return; }
+  try {
+    errEl.textContent = '';
+    setSyncStatus('syncing', 'Accesso...');
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) {
+    setSyncStatus('error', 'Errore login');
+    errEl.textContent = 'Email o password non corretti';
   }
 };
 
@@ -630,24 +723,17 @@ window.logoutUtente = async () => {
   await signOut(auth);
   CHIUSURE = [];
   currentUser = null;
+  currentProfilo = null;
+  window.IS_READONLY = false;
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
 };
 
 window._savePreferenza = async (chiave, valore) => {
-  if (!currentUser) return;
-  const ref = doc(db, 'users', currentUser.uid, 'preferenze', chiave);
+  if (!currentUser || window.IS_READONLY) return;
+  const adminUid = localStorage.getItem(ADMIN_UID_KEY) || currentUser.uid;
+  const ref = doc(db, 'users', adminUid, 'preferenze', chiave);
   await setDoc(ref, { valore });
-};
-
-window._loadPreferenza = async (chiave) => {
-  if (!currentUser) return null;
-  try {
-    const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    const ref = doc(db, 'users', currentUser.uid, 'preferenze', chiave);
-    const snap = await getDoc(ref);
-    return snap.exists() ? snap.data().valore : null;
-  } catch(e) { return null; }
 };
 
 onAuthStateChanged(auth, async user => {
@@ -655,28 +741,128 @@ onAuthStateChanged(auth, async user => {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('loading-screen').style.display = 'flex';
-    document.getElementById('loading-msg').textContent = 'Caricamento dati...';
+    document.getElementById('loading-msg').textContent = 'Caricamento...';
     setSyncStatus('syncing', 'Sincronizzazione...');
-    // Carica preferenza tema
-    try {
-      const ref = doc(db, 'users', user.uid, 'preferenze', 'tema');
-      const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const snap = await getDoc(ref);
-      if (snap.exists()) applyTheme(snap.data().valore);
-    } catch(e) {}
-    subscribeToData();
+
+    const isGoogleUser = user.providerData.some(p => p.providerId === 'google.com');
+    if (isGoogleUser) {
+      // ADMIN — salva UID e mostra selezione locale
+      localStorage.setItem(ADMIN_UID_KEY, user.uid);
+      window.IS_READONLY = false;
+      currentProfilo = null;
+      // Carica tema
+      try {
+        const ref = doc(db, 'users', user.uid, 'preferenze', 'tema');
+        const snap = await getDoc(ref);
+        if (snap.exists()) applyTheme(snap.data().valore);
+      } catch(e) {}
+      mostraSchermataLocale();
+    } else {
+      // TITOLARE — cerca profilo
+      window.IS_READONLY = true;
+      try {
+        const profiloRef = doc(db, 'profili', user.uid);
+        const profiloSnap = await getDoc(profiloRef);
+        if (profiloSnap.exists()) {
+          currentProfilo = profiloSnap.data();
+          // Se ha più locali mostra selezione, altrimenti entra diretto
+          const locali = currentProfilo.locali || [currentProfilo.localeId];
+          if (locali.length > 1) {
+            // Mostra selezione locale filtrata
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('locale-screen').style.display = 'flex';
+            document.getElementById('locale-screen').style.flexDirection = 'column';
+            const grid = document.getElementById('locale-grid');
+            grid.innerHTML = LOCALI.filter(l => locali.includes(l.id)).map(l => `
+              <div class="locale-card" onclick="selezionaLocaleReadonly('${l.id}','${l.nome}')">
+                <div class="locale-icon">${l.icona}</div>
+                <div class="locale-nome">${l.nome}</div>
+                <div class="locale-badge">Sola lettura</div>
+              </div>
+            `).join('');
+          } else {
+            // Entra diretto nel locale assegnato
+            const localeId = locali[0];
+            const localeInfo = LOCALI.find(l => l.id === localeId);
+            document.querySelector('.app-logo').textContent = localeInfo?.nome || localeId;
+            aggiornaUIReadonly();
+            subscribeToData(localeId);
+          }
+        } else {
+          alert('Profilo non trovato. Contatta l\'amministratore.');
+          await signOut(auth);
+          document.getElementById('login-screen').style.display = 'flex';
+          document.getElementById('loading-screen').style.display = 'none';
+        }
+      } catch(e) {
+        alert('Errore nel caricare il profilo.');
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('loading-screen').style.display = 'none';
+      }
+    }
   } else {
     currentUser = null;
+    currentProfilo = null;
+    window.IS_READONLY = false;
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('home-screen').style.display = 'none';
+    document.getElementById('locale-screen').style.display = 'none';
     document.getElementById('login-screen').style.display = 'flex';
   }
 });
 
-// ===== FIRESTORE SYNC =====
-function subscribeToData() {
+window.selezionaLocaleReadonly = (localeId, localeNome) => {
+  document.getElementById('locale-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = `Caricamento ${localeNome}...`;
+  document.getElementById('home-logo').textContent = localeNome;
+  const changeBtn = document.getElementById('btn-change-locale');
+  if (changeBtn) { changeBtn.style.display = ''; }
+  aggiornaUIReadonly();
+  subscribeToData(localeId);
+};
+
+function aggiornaUIReadonly() {
+  document.querySelector('.add-day-zone').style.display = 'none';
+  document.getElementById('file-input').style.display = 'none';
+  const importBtn = document.querySelector('button[onclick="document.getElementById(\'import-input\').click()"]');
+  if (importBtn) importBtn.style.display = 'none';
+  const exportBtn = document.querySelector('button[onclick="exportData()"]');
+  if (exportBtn) exportBtn.style.display = 'none';
+  document.querySelector('.tipo-select-box').style.display = 'none';
+  // Badge sola lettura
+  const syncLabel = document.getElementById('sync-label');
+  if (syncLabel && !document.querySelector('.readonly-badge')) {
+    const badge = document.createElement('span');
+    badge.className = 'readonly-badge';
+    badge.textContent = 'Sola lettura';
+    syncLabel.after(badge);
+  }
+}
+
+window.cambiaLocale = () => {
   if (unsubscribeSnapshot) unsubscribeSnapshot();
-  const col = collection(db, 'users', currentUser.uid, 'chiusure');
+  CHIUSURE = [];
+  document.getElementById('home-screen').style.display = 'none';
+  document.getElementById('locale-screen').style.display = 'flex';
+  document.getElementById('locale-screen').style.flexDirection = 'column';
+  // Reset logo
+  document.getElementById('home-logo').textContent = 'EGO';
+  document.getElementById('btn-change-locale').style.display = 'none';
+};
+
+// ===== FIRESTORE SYNC =====
+let currentLocaleId = null; // es. 'ego', 'kings', ecc.
+
+function subscribeToData(localeId) {
+  if (unsubscribeSnapshot) unsubscribeSnapshot();
+  currentLocaleId = localeId;
+  // I dati sono salvati sotto: users/{adminUid}/locali/{localeId}/chiusure
+  const adminUid = localStorage.getItem(ADMIN_UID_KEY) || currentUser.uid;
+  const dataPath = currentProfilo
+    ? ['users', adminUid, 'locali', currentProfilo.localeId, 'chiusure']
+    : ['users', adminUid, 'locali', localeId, 'chiusure'];
+  const col = collection(db, ...dataPath);
   const q = query(col, orderBy('data', 'desc'));
   unsubscribeSnapshot = onSnapshot(q, snap => {
     CHIUSURE = snap.docs.map(d => d.data());
@@ -696,12 +882,39 @@ function subscribeToData() {
   });
 }
 
-// Esponi funzioni save/delete al resto del codice
+function mostraSchermataLocale() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('locale-screen').style.display = 'flex';
+  document.getElementById('locale-screen').style.flexDirection = 'column';
+  // Aggiorna tema bottone
+  const btnThemeLocale = document.getElementById('btn-theme-locale');
+  if (btnThemeLocale) btnThemeLocale.textContent = currentTheme === 'light' ? '☀️' : '🌙';
+  // Renderizza le card dei locali
+  const grid = document.getElementById('locale-grid');
+  grid.innerHTML = LOCALI.map(l => `
+    <div class="locale-card" onclick="selezionaLocale('${l.id}', '${l.nome}')">
+      <div class="locale-icon">${l.icona}</div>
+      <div class="locale-nome">${l.nome}</div>
+      <div class="locale-badge">Tocca per aprire</div>
+    </div>
+  `).join('');
+}
+
+window.selezionaLocale = (localeId, localeNome) => {
+  document.getElementById('locale-screen').style.display = 'none';
+  document.getElementById('loading-screen').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = `Caricamento ${localeNome}...`;
+  document.getElementById('home-logo').textContent = localeNome;
+  document.getElementById('btn-change-locale').style.display = '';
+  subscribeToData(localeId);
+};
+
 window._saveChiusura = async (chiusura) => {
-  if (!currentUser) return;
+  if (!currentUser || window.IS_READONLY) return;
   setSyncStatus('syncing', 'Salvataggio...');
   try {
-    const ref = doc(db, 'users', currentUser.uid, 'chiusure', chiusura.id);
+    const adminUid = localStorage.getItem(ADMIN_UID_KEY) || currentUser.uid;
+    const ref = doc(db, 'users', adminUid, 'locali', currentLocaleId, 'chiusure', chiusura.id);
     await setDoc(ref, chiusura);
     setSyncStatus('synced', 'Sincronizzato');
   } catch(e) {
@@ -712,10 +925,11 @@ window._saveChiusura = async (chiusura) => {
 };
 
 window._deleteChiusura = async (id) => {
-  if (!currentUser) return;
+  if (!currentUser || window.IS_READONLY) return;
   setSyncStatus('syncing', 'Eliminazione...');
   try {
-    const ref = doc(db, 'users', currentUser.uid, 'chiusure', id);
+    const adminUid = localStorage.getItem(ADMIN_UID_KEY) || currentUser.uid;
+    const ref = doc(db, 'users', adminUid, 'locali', currentLocaleId, 'chiusure', id);
     await deleteDoc(ref);
     setSyncStatus('synced', 'Sincronizzato');
   } catch(e) {
@@ -723,6 +937,13 @@ window._deleteChiusura = async (id) => {
     console.error(e);
     throw e;
   }
+};
+
+// Salva profilo titolare (solo admin)
+window._salvaProfiloTitolare = async (uid, nome, localeId) => {
+  const adminUid = localStorage.getItem(ADMIN_UID_KEY) || currentUser.uid;
+  const ref = doc(db, 'profili', uid);
+  await setDoc(ref, { nome, localeId, adminUid, locali: [localeId] });
 };
 
 function setSyncStatus(status, label) {
@@ -739,6 +960,16 @@ document.getElementById('login-screen').style.display = 'flex';
 <script>
 // ===== COSTANTI =====
 const CATEGORIE_ESCLUSE = ['SERVIZIO', '--CLIENTE--'];
+
+// Definizione locali — UID è il tuo UID Google (viene impostato come admin)
+// Per i locali degli altri, i dati sono salvati sotto il loro UID Firestore
+const LOCALI = [
+  { id: 'ego',          nome: 'EGO',          icona: '⭐', adminOnly: false },
+  { id: 'kings',        nome: 'Kings',         icona: '👑', adminOnly: false },
+  { id: 'rio',          nome: 'Rio',           icona: '🌊', adminOnly: false },
+  { id: 'park_village', nome: 'Park Village',  icona: '🌳', adminOnly: false },
+  { id: 'embarcadero',  nome: 'Embarcadero',   icona: '⚓', adminOnly: false },
+];
 
 // ===== STATO =====
 let CHIUSURE = [];
@@ -828,9 +1059,13 @@ function applyTheme(theme) {
   if (theme === 'light') {
     document.body.classList.add('light');
     document.getElementById('btn-theme').textContent = '☀️';
+    const bl = document.getElementById('btn-theme-locale');
+    if (bl) bl.textContent = '☀️';
   } else {
     document.body.classList.remove('light');
     document.getElementById('btn-theme').textContent = '🌙';
+    const bl = document.getElementById('btn-theme-locale');
+    if (bl) bl.textContent = '🌙';
   }
 }
 
@@ -956,8 +1191,8 @@ function renderGiorniList() {
         ${c.nota ? `<div class="note-preview">📝 ${c.nota}</div>` : ''}
       </div>
       <div class="giorno-actions" onclick="event.stopPropagation()">
-        <button class="btn-note ${c.nota ? 'has-note' : ''}" onclick="apriNota('${c.id}')" title="${c.nota ? 'Modifica nota' : 'Aggiungi nota'}">📝</button>
-        <button class="btn-icon del" onclick="eliminaGiorno('${c.id}')" title="Elimina">🗑</button>
+        ${!window.IS_READONLY ? `<button class="btn-note ${c.nota ? 'has-note' : ''}" onclick="apriNota('${c.id}')" title="${c.nota ? 'Modifica nota' : 'Aggiungi nota'}">📝</button>` : (c.nota ? `<span style="font-size:0.8rem">📝</span>` : '')}
+        ${!window.IS_READONLY ? `<button class="btn-icon del" onclick="eliminaGiorno('${c.id}')" title="Elimina">🗑</button>` : ''}
       </div>
     </div>`;
   }).join('');
