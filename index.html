@@ -410,6 +410,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
         <button class="btn-quick" onclick="selectMese()">Questo mese</button>
         <button class="btn-quick" onclick="deselezionaTutti()">Deseleziona tutto</button>
       </div>
+      <div class="totali-bar" id="totali-bar-analisi" style="display:none; margin: 0 0 0.5rem;"></div>
       <div class="giorni-list" id="giorni-list-analisi"></div>
       <button class="btn-analisi" id="btn-analisi" onclick="apriAnalisi()" disabled>Apri analisi aggregata</button>
     </div>
@@ -802,17 +803,19 @@ function renderGiorniList() {
   // Totali rapidi
   const tuttiTipo = CHIUSURE.filter(c => (c.tipo || 'giorno') === currentSubtab);
   if (tuttiTipo.length) {
+    const n = tuttiTipo.length;
     const totInc = tuttiTipo.reduce((s,c) => s+(c.totImponibile||0), 0);
     const totMarg = tuttiTipo.reduce((s,c) => s+(c.totMargine||0), 0);
     const totMargEff = tuttiTipo.reduce((s,c) => s+(c.margEff||0), 0);
-    const mediaInc = totInc / tuttiTipo.length;
     totaliBar.style.display = 'flex';
     totaliBar.innerHTML = `
-      <div class="totali-item">Totale incasso <span class="acc">${fmt(totInc)}</span></div>
-      <div class="totali-item">Media incasso <span>${fmt(mediaInc)}</span></div>
-      <div class="totali-item">Totale margine <span class="grn">${fmt(totMarg)}</span></div>
-      <div class="totali-item">Marg. eff. totale <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
-      <div class="totali-item" style="color:var(--text3)">su ${tuttiTipo.length} chiusure</div>
+      <div class="totali-item">Incasso tot. <span class="acc">${fmt(totInc)}</span></div>
+      <div class="totali-item">Media inc. <span>${fmt(totInc/n)}</span></div>
+      <div class="totali-item">Margine tot. <span class="grn">${fmt(totMarg)}</span></div>
+      <div class="totali-item">Media marg. <span class="grn">${fmt(totMarg/n)}</span></div>
+      <div class="totali-item">Marg. eff. tot. <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
+      <div class="totali-item">Media m.eff. <span class="${(totMargEff/n)>=0?'grn':'negativo'}">${fmt(totMargEff/n)}</span></div>
+      <div class="totali-item" style="color:var(--text3)">su ${n} chiusure</div>
     `;
   } else {
     totaliBar.style.display = 'none';
@@ -851,10 +854,38 @@ function renderGiorniList() {
 
 function renderGiorniListAnalisi() {
   const container = document.getElementById('giorni-list-analisi');
+  const totaliBar = document.getElementById('totali-bar-analisi');
   const filtered = CHIUSURE.filter(c => (c.tipo || 'giorno') === currentAnalisiSubtab);
   const emptyLabels = { giorno: 'giornaliere', settimana: 'settimanali', mese: 'mensili' };
+
+  // Totali: se ci sono selezionati mostra quelli, altrimenti tutti
+  const riferimento = selectedIds.size > 0
+    ? filtered.filter(c => selectedIds.has(c.id))
+    : filtered;
+
+  if (riferimento.length) {
+    const n = riferimento.length;
+    const totInc = riferimento.reduce((s,c)=>s+(c.totImponibile||0),0);
+    const totMarg = riferimento.reduce((s,c)=>s+(c.totMargine||0),0);
+    const totMargEff = riferimento.reduce((s,c)=>s+(c.margEff||0),0);
+    const label = selectedIds.size > 0 ? `${n} selezionati` : `${n} totali`;
+    totaliBar.style.display = 'flex';
+    totaliBar.innerHTML = `
+      <div class="totali-item">Incasso <span class="acc">${fmt(totInc)}</span></div>
+      <div class="totali-item">Media inc. <span>${fmt(totInc/n)}</span></div>
+      <div class="totali-item">Margine <span class="grn">${fmt(totMarg)}</span></div>
+      <div class="totali-item">Media marg. <span class="grn">${fmt(totMarg/n)}</span></div>
+      <div class="totali-item">Marg. eff. <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
+      <div class="totali-item">Media m.eff. <span class="${(totMargEff/n)>=0?'grn':'negativo'}">${fmt(totMargEff/n)}</span></div>
+      <div class="totali-item" style="color:var(--text3)">${label}</div>
+    `;
+  } else {
+    totaliBar.style.display = 'none';
+  }
+
   if (!filtered.length) {
     container.innerHTML = `<div class="empty-state"><span class="empty-icon">📋</span><h3>Nessuna chiusura ${emptyLabels[currentAnalisiSubtab]}</h3></div>`;
+    aggiornaSelezioneInfo();
     return;
   }
   container.innerHTML = filtered.map(c => `
@@ -866,6 +897,7 @@ function renderGiorniListAnalisi() {
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
           <div class="giorno-stat">Marg. Eff. <span class="${(c.margEff||0)>=0?'positivo':'negativo'}">${fmt(c.margEff||0)}</span></div>
         </div>
+        ${c.nota ? `<div class="note-preview">📝 ${c.nota}</div>` : ''}
       </div>
       <div style="font-size:1.2rem">${selectedIds.has(c.id) ? '✓' : ''}</div>
     </div>
