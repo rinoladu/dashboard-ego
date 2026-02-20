@@ -250,6 +250,59 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 }
 .subtab.active { color: var(--accent2); border-bottom-color: var(--accent2); }
 .subtab:hover:not(.active) { color: var(--text2); }
+
+/* SEARCH + SORT BAR */
+.list-controls {
+  display: flex; gap: 0.5rem; padding: 0.7rem 1rem 0; align-items: center;
+}
+.search-input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 0.45rem 0.8rem; font-size: 0.82rem; font-family: 'Barlow', sans-serif;
+  outline: none; transition: border-color 0.2s;
+}
+.search-input::placeholder { color: var(--text3); }
+.search-input:focus { border-color: var(--accent2); }
+.sort-select {
+  appearance: none; background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
+  border-radius: 8px; padding: 0.45rem 0.7rem; font-size: 0.75rem; font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; letter-spacing: 0.05em; cursor: pointer; outline: none;
+}
+
+/* TOTALI RAPIDI */
+.totali-bar {
+  margin: 0 1rem 0.5rem; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.7rem 1rem;
+  display: flex; gap: 1rem; flex-wrap: wrap;
+}
+.totali-item { font-size: 0.72rem; color: var(--text3); }
+.totali-item span { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; color: var(--text2); margin-left: 0.3rem; }
+.totali-item span.acc { color: var(--accent); }
+.totali-item span.grn { color: var(--green); }
+
+/* NOTE MODAL */
+.note-area {
+  width: 100%; min-height: 100px; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 10px; padding: 0.8rem; font-family: 'Barlow', sans-serif;
+  font-size: 0.9rem; resize: vertical; outline: none; margin-top: 0.5rem;
+}
+.note-area:focus { border-color: var(--accent); }
+.note-preview {
+  font-size: 0.7rem; color: var(--text3); margin-top: 0.3rem; font-style: italic;
+  max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.btn-note {
+  background: none; border: 1px solid var(--border); color: var(--text3);
+  width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.btn-note:hover { border-color: var(--accent); color: var(--accent); }
+.btn-note.has-note { border-color: var(--accent); color: var(--accent); background: #1a1408; }
+.btn-save-note {
+  display: block; width: 100%; background: var(--accent); color: #000;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 0.7rem;
+  border-radius: 10px; border: none; cursor: pointer; margin-top: 1rem;
+}
 </style>
 </head>
 <body>
@@ -323,6 +376,17 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
       <p>Tocca per caricare un file Excel</p>
     </div>
     <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">
+    <div class="list-controls">
+      <input class="search-input" type="text" id="search-input" placeholder="🔍 Cerca chiusura..." oninput="renderGiorniList()">
+      <select class="sort-select" id="sort-select" onchange="renderGiorniList()">
+        <option value="data-desc">Data ↓</option>
+        <option value="data-asc">Data ↑</option>
+        <option value="incasso-desc">Incasso ↓</option>
+        <option value="margine-desc">Margine ↓</option>
+        <option value="margeff-desc">Marg. Eff. ↓</option>
+      </select>
+    </div>
+    <div class="totali-bar" id="totali-bar" style="display:none"></div>
     <div class="giorni-list" id="giorni-list"></div>
   </div>
 
@@ -442,6 +506,18 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <button class="btn-stat orange" onclick="openModal('birre-margine')">Birre più margine</button>
   </div>
   <div style="height:2rem"></div>
+</div>
+
+<!-- MODAL NOTE -->
+<div class="modal-overlay" id="note-modal-overlay" onclick="closeNoteModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeNoteModal()">✕</button>
+    <div class="modal-title">📝 Note chiusura</div>
+    <div id="note-modal-date" style="text-align:center;color:var(--text3);font-size:0.8rem;margin-bottom:0.5rem"></div>
+    <textarea class="note-area" id="note-textarea" placeholder="Scrivi una nota per questa chiusura..."></textarea>
+    <button class="btn-save-note" onclick="salvaNota()">Salva nota</button>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -698,19 +774,62 @@ function switchTab(tab) {
 // ===== RENDER LISTE =====
 function renderGiorniList() {
   const container = document.getElementById('giorni-list');
-  const filtered = CHIUSURE.filter(c => (c.tipo || 'giorno') === currentSubtab);
+  const totaliBar = document.getElementById('totali-bar');
+  const searchVal = (document.getElementById('search-input')?.value || '').toLowerCase();
+  const sortVal = document.getElementById('sort-select')?.value || 'data-desc';
   const emptyLabels = { giorno: 'giornaliere', settimana: 'settimanali', mese: 'mensili' };
+
+  let filtered = CHIUSURE.filter(c => (c.tipo || 'giorno') === currentSubtab);
+
+  // Ricerca
+  if (searchVal) {
+    filtered = filtered.filter(c =>
+      (c.titolo || formatDate(c.data)).toLowerCase().includes(searchVal) ||
+      (c.nota || '').toLowerCase().includes(searchVal)
+    );
+  }
+
+  // Ordinamento
+  filtered = [...filtered].sort((a, b) => {
+    if (sortVal === 'data-desc') return b.data.localeCompare(a.data);
+    if (sortVal === 'data-asc') return a.data.localeCompare(b.data);
+    if (sortVal === 'incasso-desc') return (b.totImponibile||0) - (a.totImponibile||0);
+    if (sortVal === 'margine-desc') return (b.totMargine||0) - (a.totMargine||0);
+    if (sortVal === 'margeff-desc') return (b.margEff||0) - (a.margEff||0);
+    return 0;
+  });
+
+  // Totali rapidi
+  const tuttiTipo = CHIUSURE.filter(c => (c.tipo || 'giorno') === currentSubtab);
+  if (tuttiTipo.length) {
+    const totInc = tuttiTipo.reduce((s,c) => s+(c.totImponibile||0), 0);
+    const totMarg = tuttiTipo.reduce((s,c) => s+(c.totMargine||0), 0);
+    const totMargEff = tuttiTipo.reduce((s,c) => s+(c.margEff||0), 0);
+    const mediaInc = totInc / tuttiTipo.length;
+    totaliBar.style.display = 'flex';
+    totaliBar.innerHTML = `
+      <div class="totali-item">Totale incasso <span class="acc">${fmt(totInc)}</span></div>
+      <div class="totali-item">Media incasso <span>${fmt(mediaInc)}</span></div>
+      <div class="totali-item">Totale margine <span class="grn">${fmt(totMarg)}</span></div>
+      <div class="totali-item">Marg. eff. totale <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
+      <div class="totali-item" style="color:var(--text3)">su ${tuttiTipo.length} chiusure</div>
+    `;
+  } else {
+    totaliBar.style.display = 'none';
+  }
+
   if (!filtered.length) {
     container.innerHTML = `<div class="empty-state">
       <span class="empty-icon">📋</span>
-      <h3>Nessuna chiusura ${emptyLabels[currentSubtab]}</h3>
-      <p>Carica un file Excel qui sopra</p>
+      <h3>${searchVal ? 'Nessun risultato' : 'Nessuna chiusura ' + emptyLabels[currentSubtab]}</h3>
+      <p>${searchVal ? 'Prova con un altro termine' : 'Carica un file Excel qui sopra'}</p>
     </div>`;
     return;
   }
+
   container.innerHTML = filtered.map(c => `
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
-      <div>
+      <div style="flex:1">
         <div class="giorno-date">
           ${c.titolo || formatDate(c.data)}
           ${c.tipo ? `<span class="tipo-badge ${c.tipo}">${c.tipo.toUpperCase()}</span>` : ''}
@@ -720,8 +839,10 @@ function renderGiorniList() {
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
           <div class="giorno-stat">Marg. Eff. <span class="${(c.margEff||0)>=0?'positivo':'negativo'}">${fmt(c.margEff||0)}</span></div>
         </div>
+        ${c.nota ? `<div class="note-preview">📝 ${c.nota}</div>` : ''}
       </div>
       <div class="giorno-actions" onclick="event.stopPropagation()">
+        <button class="btn-note ${c.nota ? 'has-note' : ''}" onclick="apriNota('${c.id}')" title="${c.nota ? 'Modifica nota' : 'Aggiungi nota'}">📝</button>
         <button class="btn-icon del" onclick="eliminaGiorno('${c.id}')" title="Elimina">🗑</button>
       </div>
     </div>
@@ -804,6 +925,45 @@ async function eliminaGiorno(id) {
     // Firestore onSnapshot aggiornerà automaticamente CHIUSURE e la lista
   } catch(e) {
     alert('Errore eliminazione: ' + e.message);
+  }
+}
+
+// ===== NOTE =====
+let noteCurrentId = null;
+
+function apriNota(id) {
+  const c = CHIUSURE.find(x => x.id === id);
+  if (!c) return;
+  noteCurrentId = id;
+  document.getElementById('note-modal-date').textContent = c.titolo || formatDate(c.data);
+  document.getElementById('note-textarea').value = c.nota || '';
+  document.getElementById('note-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('note-textarea').focus(), 300);
+}
+
+function closeNoteModal() {
+  document.getElementById('note-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  noteCurrentId = null;
+}
+
+function closeNoteModalOutside(e) {
+  if (e.target === document.getElementById('note-modal-overlay')) closeNoteModal();
+}
+
+async function salvaNota() {
+  if (!noteCurrentId) return;
+  const nota = document.getElementById('note-textarea').value.trim();
+  const c = CHIUSURE.find(x => x.id === noteCurrentId);
+  if (!c) return;
+  c.nota = nota;
+  try {
+    await window._saveChiusura(c);
+    closeNoteModal();
+    renderGiorniList();
+  } catch(e) {
+    alert('Errore nel salvataggio della nota: ' + e.message);
   }
 }
 
