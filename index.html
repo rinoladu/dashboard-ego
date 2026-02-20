@@ -888,12 +888,15 @@ function renderGiorniList() {
   if (tuttiTipo.length) {
     const n = tuttiTipo.length;
     const totInc = tuttiTipo.reduce((s,c) => s+(c.totImponibile||0), 0);
+    const totLordo = totInc * 1.10;
     const totMarg = tuttiTipo.reduce((s,c) => s+(c.totMargine||0), 0);
     const totMargEff = tuttiTipo.reduce((s,c) => s+(c.margEff||0), 0);
     totaliBar.style.display = 'flex';
     totaliBar.innerHTML = `
-      <div class="totali-item">Incasso tot. <span class="acc">${fmt(totInc)}</span></div>
-      <div class="totali-item">Media inc. <span>${fmt(totInc/n)}</span></div>
+      <div class="totali-item">Lordo tot. <span class="acc">${fmt(totLordo)}</span></div>
+      <div class="totali-item">Media lordo <span>${fmt(totLordo/n)}</span></div>
+      <div class="totali-item">Impon. tot. <span class="acc">${fmt(totInc)}</span></div>
+      <div class="totali-item">Media impon. <span>${fmt(totInc/n)}</span></div>
       <div class="totali-item">Margine tot. <span class="grn">${fmt(totMarg)}</span></div>
       <div class="totali-item">Media marg. <span class="grn">${fmt(totMarg/n)}</span></div>
       <div class="totali-item">Marg. eff. tot. <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
@@ -913,7 +916,9 @@ function renderGiorniList() {
     return;
   }
 
-  container.innerHTML = filtered.map(c => `
+  container.innerHTML = filtered.map(c => {
+    const lordo = (c.totImponibile||0) * 1.10;
+    return `
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
       <div style="flex:1">
         <div class="giorno-date">
@@ -921,7 +926,8 @@ function renderGiorniList() {
           ${c.tipo ? `<span class="tipo-badge ${c.tipo}">${c.tipo.toUpperCase()}</span>` : ''}
         </div>
         <div class="giorno-meta">
-          <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
+          <div class="giorno-stat">Lordo <span>${fmt(lordo)}</span></div>
+          <div class="giorno-stat">Imponibile <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
           <div class="giorno-stat">Marg. Eff. <span class="${(c.margEff||0)>=0?'positivo':'negativo'}">${fmt(c.margEff||0)}</span></div>
         </div>
@@ -931,8 +937,8 @@ function renderGiorniList() {
         <button class="btn-note ${c.nota ? 'has-note' : ''}" onclick="apriNota('${c.id}')" title="${c.nota ? 'Modifica nota' : 'Aggiungi nota'}">📝</button>
         <button class="btn-icon del" onclick="eliminaGiorno('${c.id}')" title="Elimina">🗑</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function renderGiorniListAnalisi() {
@@ -949,13 +955,16 @@ function renderGiorniListAnalisi() {
   if (riferimento.length) {
     const n = riferimento.length;
     const totInc = riferimento.reduce((s,c)=>s+(c.totImponibile||0),0);
+    const totLordo = totInc * 1.10;
     const totMarg = riferimento.reduce((s,c)=>s+(c.totMargine||0),0);
     const totMargEff = riferimento.reduce((s,c)=>s+(c.margEff||0),0);
     const label = selectedIds.size > 0 ? `${n} selezionati` : `${n} totali`;
     totaliBar.style.display = 'flex';
     totaliBar.innerHTML = `
-      <div class="totali-item">Incasso <span class="acc">${fmt(totInc)}</span></div>
-      <div class="totali-item">Media inc. <span>${fmt(totInc/n)}</span></div>
+      <div class="totali-item">Lordo <span class="acc">${fmt(totLordo)}</span></div>
+      <div class="totali-item">Media lordo <span>${fmt(totLordo/n)}</span></div>
+      <div class="totali-item">Imponibile <span class="acc">${fmt(totInc)}</span></div>
+      <div class="totali-item">Media impon. <span>${fmt(totInc/n)}</span></div>
       <div class="totali-item">Margine <span class="grn">${fmt(totMarg)}</span></div>
       <div class="totali-item">Media marg. <span class="grn">${fmt(totMarg/n)}</span></div>
       <div class="totali-item">Marg. eff. <span class="${totMargEff>=0?'grn':'negativo'}">${fmt(totMargEff)}</span></div>
@@ -971,20 +980,23 @@ function renderGiorniListAnalisi() {
     aggiornaSelezioneInfo();
     return;
   }
-  container.innerHTML = filtered.map(c => `
+  container.innerHTML = filtered.map(c => {
+    const lordo = (c.totImponibile||0) * 1.10;
+    return `
     <div class="giorno-card ${selectedIds.has(c.id) ? 'selected' : ''}" onclick="toggleSelezione('${c.id}')">
       <div>
         <div class="giorno-date">${c.titolo || formatDate(c.data)}</div>
         <div class="giorno-meta">
-          <div class="giorno-stat">Incasso <span>${fmt(c.totImponibile)}</span></div>
+          <div class="giorno-stat">Lordo <span>${fmt(lordo)}</span></div>
+          <div class="giorno-stat">Imponibile <span>${fmt(c.totImponibile)}</span></div>
           <div class="giorno-stat">Margine <span>${fmt(c.totMargine)}</span></div>
           <div class="giorno-stat">Marg. Eff. <span class="${(c.margEff||0)>=0?'positivo':'negativo'}">${fmt(c.margEff||0)}</span></div>
         </div>
         ${c.nota ? `<div class="note-preview">📝 ${c.nota}</div>` : ''}
       </div>
       <div style="font-size:1.2rem">${selectedIds.has(c.id) ? '✓' : ''}</div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
   aggiornaSelezioneInfo();
 }
 
