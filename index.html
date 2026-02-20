@@ -472,7 +472,8 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <button class="btn-sm" onclick="tornaHome()">← Home</button>
   </div>
   <div class="summary-grid">
-    <div class="card full"><div class="card-label">Incasso imponibile</div><div class="card-value accent" id="s-incasso">—</div></div>
+    <div class="card"><div class="card-label">Incasso lordo (IVA incl.)</div><div class="card-value accent" id="s-lordo">—</div></div>
+    <div class="card"><div class="card-label">Incasso imponibile</div><div class="card-value accent" id="s-incasso">—</div></div>
     <div class="card"><div class="card-label">Margine chiusura</div><div class="card-value green" id="s-margine">—</div></div>
     <div class="card"><div class="card-label">Break Even</div><div class="card-value blue" id="s-bep">—</div></div>
     <div class="card"><div class="card-label">Costi fissi/giorno</div><div class="card-value" id="s-costi-fissi">—</div></div>
@@ -1219,11 +1220,13 @@ function parseWorkbook(wb, filename, periodo, mese=null) {
 function buildUI() {
   const d=CURRENT_DATA;
   const totImponibile=d.chiusura.reduce((s,r)=>s+r.imponibile,0);
+  const totLordo=totImponibile*1.10;
   const totMargine=d.chiusura.reduce((s,r)=>s+r.margineEuro,0);
   const costiGiorno=d.costiGiorn||0;
   const percMargine=totImponibile>0?totMargine/totImponibile:0;
   const bep=percMargine>0?totImponibile+(costiGiorno-totMargine)/percMargine:0;
   const margEff=totMargine-costiGiorno;
+  document.getElementById('s-lordo').textContent=fmt(totLordo);
   document.getElementById('s-incasso').textContent=fmt(totImponibile);
   document.getElementById('s-margine').textContent=fmt(totMargine);
   document.getElementById('s-bep').textContent=costiGiorno>0?fmt(bep):'N/D';
