@@ -51,7 +51,7 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
   position: sticky; top: 0; z-index: 100;
 }
 .app-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 1.8rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; }
-.home-actions { display: flex; gap: 0.5rem; align-items: center; }
+.home-actions { display: flex; gap: 0.4rem; align-items: center; }
 .btn-sm {
   background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
   padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
@@ -59,6 +59,14 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 }
 .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
 .btn-sm.logout:hover { border-color: var(--red); color: var(--red); }
+@media(max-width: 500px) {
+  .app-logo { font-size: 1.4rem; }
+  .home-header { padding: 0.8rem; }
+  .btn-sm .btn-label { display: none; }
+  .btn-sm { padding: 0.4rem 0.5rem; }
+  .sync-label { display: none; }
+  .sync-dot { margin-right: 0; }
+}
 
 /* Sync indicator */
 .sync-dot {
@@ -330,10 +338,10 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
     <div class="home-actions">
       <span class="sync-dot" id="sync-dot"></span>
       <span class="sync-label" id="sync-label">—</span>
-      <button class="btn-sm" onclick="exportData()">📤 Esporta</button>
-      <button class="btn-sm" onclick="document.getElementById('import-input').click()">📥 Importa</button>
+      <button class="btn-sm" onclick="exportData()">📤 <span class="btn-label">Esporta</span></button>
+      <button class="btn-sm" onclick="document.getElementById('import-input').click()">📥 <span class="btn-label">Importa</span></button>
       <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
-      <button class="btn-sm logout" onclick="logoutUtente()" title="Esci">👤 Esci</button>
+      <button class="btn-sm logout" onclick="logoutUtente()" title="Esci">👤 <span class="btn-label">Esci</span></button>
     </div>
   </div>
 
