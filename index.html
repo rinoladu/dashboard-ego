@@ -236,6 +236,20 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 .hidden { display: none !important; }
 .positivo { color: #16a34a; font-weight: bold; }
 .negativo { color: #dc2626; font-weight: bold; }
+
+/* SOTTO-TAB tipo chiusura */
+.subtabs {
+  display: flex; background: var(--surface2); border-bottom: 1px solid var(--border);
+  padding: 0 1rem; gap: 0;
+}
+.subtab {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3);
+  padding: 0.6rem 1rem; cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.2s; flex: 1; text-align: center;
+}
+.subtab.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+.subtab:hover:not(.active) { color: var(--text2); }
 </style>
 </head>
 <body>
@@ -277,8 +291,15 @@ body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--te
 
   <!-- TAB GIORNI -->
   <div id="panel-giorni">
+    <!-- Sotto-tab tipo chiusura -->
+    <div class="subtabs">
+      <div class="subtab active" id="subtab-giorno" onclick="switchSubtab('giorno')">Giornaliere</div>
+      <div class="subtab" id="subtab-settimana" onclick="switchSubtab('settimana')">Settimanali</div>
+      <div class="subtab" id="subtab-mese" onclick="switchSubtab('mese')">Mensili</div>
+    </div>
+
     <div class="tipo-select-box">
-      <label>Tipo di chiusura</label>
+      <label>Tipo di chiusura da aggiungere</label>
       <select id="periodo-select">
         <option value="giornaliera">Giornaliera</option>
         <option value="settimanale">Settimanale</option>
@@ -567,7 +588,16 @@ window.addEventListener('load', () => {
   const tipoSelect = document.getElementById('periodo-select');
   const meseContainer = document.getElementById('mese-container');
   tipoSelect.addEventListener('change', () => {
-    meseContainer.style.display = tipoSelect.value === 'mensile' ? 'block' : 'none';
+    const v = tipoSelect.value;
+    meseContainer.style.display = v === 'mensile' ? 'block' : 'none';
+    // Sync subtab
+    const map = { giornaliera: 'giorno', settimanale: 'settimana', mensile: 'mese' };
+    const nuovoTipo = map[v];
+    currentSubtab = nuovoTipo;
+    ['giorno','settimana','mese'].forEach(t => {
+      document.getElementById('subtab-'+t).className = 'subtab' + (t === nuovoTipo ? ' active' : '');
+    });
+    renderGiorniList();
   });
   document.getElementById('file-input').addEventListener('change', e => {
     if (e.target.files[0]) {
@@ -628,6 +658,19 @@ function importData(e) {
 }
 
 // ===== TABS =====
+let currentSubtab = 'giorno';
+
+function switchSubtab(tipo) {
+  currentSubtab = tipo;
+  ['giorno','settimana','mese'].forEach(t => {
+    document.getElementById('subtab-'+t).className = 'subtab' + (t === tipo ? ' active' : '');
+  });
+  const map = { giorno: 'giornaliera', settimana: 'settimanale', mese: 'mensile' };
+  document.getElementById('periodo-select').value = map[tipo];
+  document.getElementById('mese-container').style.display = tipo === 'mese' ? 'block' : 'none';
+  renderGiorniList();
+}
+
 function switchTab(tab) {
   document.getElementById('panel-giorni').style.display = tab === 'giorni' ? 'block' : 'none';
   document.getElementById('panel-analisi').style.display = tab === 'analisi' ? 'block' : 'none';
@@ -639,15 +682,17 @@ function switchTab(tab) {
 // ===== RENDER LISTE =====
 function renderGiorniList() {
   const container = document.getElementById('giorni-list');
-  if (!CHIUSURE.length) {
+  const filtered = CHIUSURE.filter(c => (c.tipo || 'giorno') === currentSubtab);
+  const emptyLabels = { giorno: 'giornaliere', settimana: 'settimanali', mese: 'mensili' };
+  if (!filtered.length) {
     container.innerHTML = `<div class="empty-state">
       <span class="empty-icon">📋</span>
-      <h3>Nessuna chiusura salvata</h3>
-      <p>Carica il tuo primo file Excel qui sopra</p>
+      <h3>Nessuna chiusura ${emptyLabels[currentSubtab]}</h3>
+      <p>Carica un file Excel qui sopra</p>
     </div>`;
     return;
   }
-  container.innerHTML = CHIUSURE.map(c => `
+  container.innerHTML = filtered.map(c => `
     <div class="giorno-card" onclick="apriGiorno('${c.id}')">
       <div>
         <div class="giorno-date">
