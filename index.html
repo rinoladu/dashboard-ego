@@ -757,16 +757,20 @@ function toggleSelezione(id) {
   if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
   renderGiorniListAnalisi();
 }
-function selectUltimi(n) { selectedIds = new Set(CHIUSURE.slice(0,n).map(c=>c.id)); renderGiorniListAnalisi(); }
+function selectUltimi(n) {
+  const filtered = CHIUSURE.filter(c=>(c.tipo||'giorno')===currentAnalisiSubtab);
+  selectedIds = new Set(filtered.slice(0,n).map(c=>c.id));
+  renderGiorniListAnalisi();
+}
 function selectSettimana() {
   const now = new Date(); const dow = now.getDay();
   const lunedi = new Date(now); lunedi.setDate(now.getDate()-(dow===0?6:dow-1)); lunedi.setHours(0,0,0,0);
-  selectedIds = new Set(CHIUSURE.filter(c=>new Date(c.data)>=lunedi).map(c=>c.id));
+  selectedIds = new Set(CHIUSURE.filter(c=>(c.tipo||'giorno')===currentAnalisiSubtab&&new Date(c.data)>=lunedi).map(c=>c.id));
   renderGiorniListAnalisi();
 }
 function selectMese() {
   const now = new Date(); const inizio = new Date(now.getFullYear(),now.getMonth(),1);
-  selectedIds = new Set(CHIUSURE.filter(c=>new Date(c.data)>=inizio).map(c=>c.id));
+  selectedIds = new Set(CHIUSURE.filter(c=>(c.tipo||'giorno')===currentAnalisiSubtab&&new Date(c.data)>=inizio).map(c=>c.id));
   renderGiorniListAnalisi();
 }
 function deselezionaTutti() { selectedIds = new Set(); renderGiorniListAnalisi(); }
